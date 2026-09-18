@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Expediente - CATI USGP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- Navegación Superior Institucional con Logos Interactivos -->
+    <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-3">
+                
+                <!-- LADO IZQUIERDO: Logo Emprendimiento -->
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300 cursor-pointer">
+                    <img src="logo-emprendimiento.jpg" 
+                         alt="Departamento de Emprendimiento USGP" 
+                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                </div>
+
+                <!-- CENTRO: Perfil del Usuario Solicitante -->
+                <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner backdrop-blur-sm">
+                    <div class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">
+                        JP
+                    </div>
+                    <div class="text-left text-xs hidden sm:block">
+                        <span class="block font-semibold text-white leading-tight" id="headerNombreUsuario">Juan Carlos Pérez Gómez</span>
+                        <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
+                    </div>
+                    <a href="index.html" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </a>
+                </div>
+
+                <!-- LADO DERECHO: Logo Nuevo CATI USGP -->
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300 cursor-pointer">
+                    <img src="logo-CATI-2026-new.jpg" 
+                         alt="Centro de Apoyo a las Tecnologías e Innovación USGP" 
+                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                </div>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal: Formulario de Registro -->
+    <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
+        
+        <!-- Botón Volver y Encabezado -->
+        <div class="mb-6 flex items-center justify-between">
+            <div>
+                <a href="mis_tramites.html" class="inline-flex items-center gap-2 text-xs font-semibold text-red-700 hover:text-red-800 transition mb-2">
+                    <i class="fa-solid fa-arrow-left"></i> Volver a Mis Trámites
+                </a>
+                <h1 class="text-2xl font-bold text-slate-800">Solicitud de Registro de Obra / Expediente</h1>
+                <p class="text-sm text-slate-500">Formulario oficial de control y recepción de documentos ante el CATI USGP.</p>
+            </div>
+        </div>
+
+        <form id="formExpediente" action="mis_tramites.html" method="GET" class="space-y-6">
+            
+            <!-- SECCIÓN 1: INFORMACIÓN DE LA OBRA Y CLASIFICACIÓN SENADI -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">
+                        1
+                    </div>
+                    <h2 class="font-bold text-slate-800 text-base">Información del Expediente y Obra</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Título de la Obra o Proyecto *</label>
+                        <input type="text" id="tituloObra" required placeholder="Ej. Sistema Web de Control de Expedientes CATI" 
+                               class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Área de Propiedad Intelectual (SENADI) *</label>
+                        <select id="selectAreaSenadi" required onchange="actualizarTiposGeneros()" 
+                                class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                            <option value="">-- Seleccionar Área --</option>
+                            <option value="derecho_autor">Derecho de Autor y Conexos</option>
+                            <option value="propiedad_industrial">Propiedad Industrial</option>
+                            <option value="obtenciones_vegetales">Obtenciones Vegetales</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tipo / Género Específico *</label>
+                        <select id="selectTipoGenero" required 
+                                class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition bg-slate-50" disabled>
+                            <option value="">-- Primero elija el Área SENADI --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: DATOS DEL AUTOR PRINCIPAL Y COAUTORES (N AUTORES) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">
+                            2
+                        </div>
+                        <h2 class="font-bold text-slate-800 text-base">Datos de Autores y Coautores</h2>
+                    </div>
+                    
+                    <button type="button" onclick="agregarCoautor()" 
+                            class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> + Agregar Coautor
+                    </button>
+                </div>
+
+                <!-- Contenedor Dinámico de Autores -->
+                <div id="contenedorAutores" class="space-y-4">
+                    
+                    <!-- Autor 1 (Principal) -->
+                    <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative">
+                        <span class="inline-block bg-red-800 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-3">Autor Principal</span>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres y Apellidos *</label>
+                                <input type="text" id="autorPrincipalNombre" required value="Juan Carlos Pérez Gómez" 
+                                       class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">N.º de Cédula / Identificación *</label>
+                                <input type="text" id="autorPrincipalCedula" required value="1312345678" maxlength="10" 
+                                       class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono de Contacto *</label>
+                                <input type="text" id="autorPrincipalTelefono" required value="0998765432" 
+                                       class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: DOCUMENTACIÓN DIGITAL Y REQUISITOS -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
+                    <div class="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">
+                        3
+                    </div>
+                    <h2 class="font-bold text-slate-800 text-base">Carga de Documentación y Requisitos Digitales</h2>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-semibold text-slate-700">1. Cédula de Identidad Escaneada (PDF, JPG, PNG) *</label>
+                            <span class="text-[11px] text-slate-400">Máximo 5 MB</span>
+                        </div>
+                        <input type="file" id="archivoCedula" required accept=".pdf,.jpg,.jpeg,.png" 
+                               class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-semibold text-slate-700">2. Archivo Digital de la Obra Completa (ZIP, PDF, DOCX) *</label>
+                            <span class="text-[11px] text-slate-400">Máximo 50 MB</span>
+                        </div>
+                        <input type="file" id="archivoObra" required accept=".zip,.pdf,.docx" 
+                               class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="font-semibold text-slate-700">3. Contrato de Licencia No Exclusiva Firmado (PDF) *</label>
+                            <span class="text-[11px] text-slate-400">Máximo 10 MB</span>
+                        </div>
+                        <input type="file" id="archivoLicencia" required accept=".pdf" 
+                               class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- BOTÓN DE ENVÍO -->
+            <div class="flex justify-end gap-3 pt-2">
+                <a href="mis_tramites.html" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-50 transition">
+                    Cancelar
+                </a>
+                <button type="submit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Guardar y Crear Expediente
+                </button>
+            </div>
+
+        </form>
+
+    </main>
+
+    <!-- Pie de Página Institucional (Marca Grow) -->
+    <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
+            <div>
+                © 2026 <strong>CATI USGP</strong> - Centro de Apoyo a las Tecnologías y la Innovación. Universidad San Gregorio de Portoviejo.
+            </div>
+            <div class="flex items-center gap-2 font-medium">
+                <span>Desarrollado por</span>
+                <div class="inline-block transition-transform duration-300 transform hover:scale-110 cursor-pointer">
+                    <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-6 w-auto object-contain drop-shadow-sm">
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts de Lógica: Opciones dependientes SENADI y Coautores dinámicos -->
+    <script>
+        const opcionesSenadi = {
+            derecho_autor: [
+                "Software / Programa de Ordenador",
+                "Obra Literaria (Libro, Folleto, Artículo)",
+                "Obra Audiovisual (Video, Animación, Documental)",
+                "Obra Musical (Con o sin letra)",
+                "Obra Plástica / Arte Aplicado",
+                "Base de Datos"
+            ],
+            propiedad_industrial: [
+                "Marca de Productos o Servicios",
+                "Nombre Comercial",
+                "Lema Comercial",
+                "Patente de Invención",
+                "Modelo de Utilidad",
+                "Diseño Industrial"
+            ],
+            obtenciones_vegetales: [
+                "Variedad Vegetal",
+                "Conocimientos Tradicionales"
+            ]
+        };
+
+        function actualizarTiposGeneros() {
+            const area = document.getElementById('selectAreaSenadi').value;
+            const selectTipo = document.getElementById('selectTipoGenero');
+
+            selectTipo.innerHTML = '';
+
+            if (!area || !opcionesSenadi[area]) {
+                selectTipo.disabled = true;
+                selectTipo.classList.add('bg-slate-50');
+                const opt = document.createElement('option');
+                opt.value = '';
+                opt.textContent = '-- Primero elija el Área SENADI --';
+                selectTipo.appendChild(opt);
+                return;
+            }
+
+            selectTipo.disabled = false;
+            selectTipo.classList.remove('bg-slate-50');
+
+            const optDefault = document.createElement('option');
+            optDefault.value = '';
+            optDefault.textContent = '-- Seleccionar Tipo / Género --';
+            selectTipo.appendChild(optDefault);
+
+            opcionesSenadi[area].forEach(tipo => {
+                const opt = document.createElement('option');
+                opt.value = tipo;
+                opt.textContent = tipo;
+                selectTipo.appendChild(opt);
+            });
+        }
+
+        let contadorCoautores = 1;
+
+        function agregarCoautor() {
+            contadorCoautores++;
+            const contenedor = document.getElementById('contenedorAutores');
+            
+            const divCoautor = document.createElement('div');
+            divCoautor.className = 'p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative coautor-item';
+            divCoautor.id = `coautor_${contadorCoautores}`;
+            
+            divCoautor.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="inline-block bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Coautor</span>
+                    <button type="button" onclick="eliminarCoautor('coautor_${contadorCoautores}')" class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Eliminar
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres y Apellidos *</label>
+                        <input type="text" required placeholder="Nombre completo" 
+                               class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition campo-nombre">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">N.º de Cédula *</label>
+                        <input type="text" required maxlength="10" placeholder="13XXXXXXXX" 
+                               class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition campo-cedula">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label>
+                        <input type="text" required placeholder="09XXXXXXXX" 
+                               class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition campo-telefono">
+                    </div>
+                </div>
+            `;
+            
+            contenedor.appendChild(divCoautor);
+        }
+
+        function eliminarCoautor(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+    </script>
+</body>
+</html>
