@@ -76,12 +76,11 @@
                             <th class="p-4">Título de la Obra</th>
                             <th class="p-4">Área / Tipo</th>
                             <th class="p-4">Fecha</th>
-                            <th class="p-4 text-center">Documentos (PDF)</th>
+                            <th class="p-4 text-center">Documentos (PDF / Obra)</th>
                             <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaExpedientesAdmin" class="divide-y divide-slate-100">
-                        <!-- Los registros se cargarán dinámicamente desde Supabase -->
                         <tr>
                             <td colspan="6" class="p-6 text-center text-xs text-slate-400">Cargando expedientes desde la base de datos...</td>
                         </tr>
@@ -107,7 +106,7 @@
         </div>
     </footer>
 
-    <!-- Script de carga dinámica de expedientes y archivos desde Supabase -->
+    <!-- Script de carga dinámica de expedientes y archivos (incluyendo cédula) desde Supabase -->
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             try {
@@ -127,7 +126,11 @@
                 }
 
                 data.forEach(exp => {
-                    // Generar enlaces seguros para los PDF si existen en Storage
+                    // Enlaces seguros para Contrato, Obra y Cédula
+                    let cedulaBtn = exp.archivo_cedula_url 
+                        ? `<a href="${exp.archivo_cedula_url}" target="_blank" class="px-2 py-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded transition inline-flex items-center gap-1" title="Ver Cédula PDF"><i class="fa-solid fa-id-card"></i> Cédula</a>` 
+                        : `<span class="text-[10px] text-slate-400">Sin Cédula</span>`;
+
                     let contratoBtn = exp.contrato_url 
                         ? `<a href="${exp.contrato_url}" target="_blank" class="px-2 py-1 text-[11px] font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded transition inline-flex items-center gap-1" title="Ver Contrato PDF"><i class="fa-solid fa-file-pdf"></i> Contrato</a>` 
                         : `<span class="text-[10px] text-slate-400">Sin Contrato</span>`;
@@ -147,6 +150,7 @@
                             <td class="p-4 text-xs text-slate-500">${new Date(exp.created_at).toLocaleDateString()}</td>
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-1.5 flex-wrap">
+                                    ${cedulaBtn}
                                     ${contratoBtn}
                                     ${obraBtn}
                                 </div>
