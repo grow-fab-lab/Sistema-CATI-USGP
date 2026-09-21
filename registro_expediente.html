@@ -74,7 +74,6 @@
                         </select>
                     </div>
                     
-                    <!-- CORRECCIÓN: CAMPO RESTAURADO A SELECTOR DESPLEGABLE -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tipo / Género Específico *</label>
                         <select id="tipoObra" required class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
@@ -253,12 +252,12 @@
                 const autorCedula = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${autorCedula.slice(-3)}`;
                 
-                // 1. Subir archivos
+                // 1. Subir archivos principales
                 const urlCedulaPrincipal = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
-                // 2. Crear Expediente
+                // 2. Crear Expediente (CORRECCIÓN: Se envía 'usuario_id' en lugar de 'user_id')
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod,
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
@@ -270,7 +269,7 @@
                     archivo_cedula_url: urlCedulaPrincipal,
                     archivo_obra_url: urlObra,
                     contrato_url: urlContrato,
-                    user_id: currentUser.id
+                    usuario_id: currentUser.id
                 }]).select().single();
 
                 if (expError) throw expError;
