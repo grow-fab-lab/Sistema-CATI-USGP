@@ -1,6 +1,9 @@
-// Configuración e Inicialización de Supabase
-const SUPABASE_URL = 'https://TU-PROYECTO.supabase.co';
-const SUPABASE_ANON_KEY = 'TU-ANON-KEY-AQUI';
+// Cliente Centralizado de Conexión a Supabase - CATI USGP
+const SUPABASE_URL = "https://ldnqspgbnvqvprvdxaub.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_h4gikz8ypO56Zc3r5umgvw_e8evug4g";
 
-// Inicializa el cliente global de Supabase
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Inicialización del cliente global disponible en la ventana del navegador
+const { createClient } = supabase;
+const _supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+window.supabaseClient = _supabase;

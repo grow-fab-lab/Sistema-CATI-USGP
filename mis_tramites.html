@@ -7,7 +7,10 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Supabase JS CDN Corregido -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Cliente Centralizado de Supabase -->
+    <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
@@ -25,11 +28,11 @@
 
                 <!-- CENTRO: Perfil del Usuario Solicitante -->
                 <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner backdrop-blur-sm">
-                    <div id="headerAvatar" class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">
+                    <div class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">
                         JP
                     </div>
                     <div class="text-left text-xs hidden sm:block">
-                        <span class="block font-semibold text-white leading-tight" id="headerNombreUsuario">Juan Carlos Pérez Gómez</span>
+                        <span class="block font-semibold text-white leading-tight">Juan Carlos Pérez Gómez</span>
                         <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
                     </div>
                     <a href="index.html" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm">
@@ -70,7 +73,7 @@
                     <i class="fa-solid fa-folder-open"></i>
                 </div>
                 <div>
-                    <span id="contadorTotales" class="block text-2xl font-bold text-slate-800">2</span>
+                    <span class="block text-2xl font-bold text-slate-800">2</span>
                     <span class="text-xs text-slate-500 font-medium">Expedientes Totales</span>
                 </div>
             </div>
@@ -80,7 +83,7 @@
                     <i class="fa-solid fa-spinner"></i>
                 </div>
                 <div>
-                    <span id="contadorProceso" class="block text-2xl font-bold text-slate-800">2</span>
+                    <span class="block text-2xl font-bold text-slate-800">2</span>
                     <span class="text-xs text-slate-500 font-medium">En Proceso (Seguimiento)</span>
                 </div>
             </div>
@@ -90,7 +93,7 @@
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
                 <div>
-                    <span id="contadorCerrados" class="block text-2xl font-bold text-slate-800">0</span>
+                    <span class="block text-2xl font-bold text-slate-800">0</span>
                     <span class="text-xs text-slate-500 font-medium">Finalizados / Cerrados</span>
                 </div>
             </div>
@@ -100,7 +103,7 @@
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h2 class="font-bold text-slate-700 text-sm">Historial de Solicitudes Registradas</h2>
-                <span id="labelTotalExpedientes" class="text-xs text-slate-500">Mostrando 2 expediente(s)</span>
+                <span class="text-xs text-slate-500">Mostrando 2 expediente(s)</span>
             </div>
 
             <div class="overflow-x-auto">
@@ -115,12 +118,12 @@
                             <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaTramitesBody" class="divide-y divide-slate-100">
+                    <tbody class="divide-y divide-slate-100">
                         
-                        <!-- Registro 1 (En Proceso) -->
+                        <!-- Registro 1 -->
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="p-4 font-mono font-bold text-red-700">CATI-USGP-001-ABC</td>
-                            <td class="p-4 font-medium text-slate-800 text-xs">Sistema Web de Control de Expedientes CATI</td>
+                            <td class="p-4 font-medium text-slate-800">Sistema Web de Control de Expedientes CATI</td>
                             <td class="p-4 text-xs text-slate-600">
                                 <span class="block font-semibold">Derecho de Autor</span>
                                 <span class="text-slate-400">Software / Programa de Ordenador</span>
@@ -133,20 +136,20 @@
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    <button onclick="verAvanceModal('CATI-USGP-001-ABC', 'Sistema Web de Control de Expedientes CATI')" title="Ver Avance del Proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1">
+                                    <button onclick="verEstado('CATI-USGP-001-ABC')" title="Ver Avance del Proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1">
                                         <i class="fa-solid fa-eye text-slate-500"></i> Avance
                                     </button>
-                                    <button disabled title="Se activará una vez culminado todo el proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded-md cursor-not-allowed flex items-center gap-1 opacity-60">
-                                        <i class="fa-solid fa-lock text-[10px]"></i> PDF
-                                    </button>
+                                    <a href="formulario-control-seguimiento-cati-usgp.pdf" download title="Descargar Formulario PDF" class="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition flex items-center gap-1">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
                                 </div>
                             </td>
                         </tr>
 
-                        <!-- Registro 2 (En Proceso) -->
+                        <!-- Registro 2 -->
                         <tr class="hover:bg-slate-50/80 transition">
                             <td class="p-4 font-mono font-bold text-red-700">CATI-USGP-002-XYZ</td>
-                            <td class="p-4 font-medium text-slate-800 text-xs">Logotipo Institucional e Identidad Visual TechUSGP</td>
+                            <td class="p-4 font-medium text-slate-800">Logotipo Institucional e Identidad Visual TechUSGP</td>
                             <td class="p-4 text-xs text-slate-600">
                                 <span class="block font-semibold">Propiedad Industrial</span>
                                 <span class="text-slate-400">Marca de Productos o Servicios</span>
@@ -159,12 +162,12 @@
                             </td>
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
-                                    <button onclick="verAvanceModal('CATI-USGP-002-XYZ', 'Logotipo Institucional e Identidad Visual TechUSGP')" title="Ver Avance del Proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1">
+                                    <button onclick="verEstado('CATI-USGP-002-XYZ')" title="Ver Avance del Proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1">
                                         <i class="fa-solid fa-eye text-slate-500"></i> Avance
                                     </button>
-                                    <button disabled title="Se activará una vez culminado todo el proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-400 bg-slate-100 border border-slate-200 rounded-md cursor-not-allowed flex items-center gap-1 opacity-60">
-                                        <i class="fa-solid fa-lock text-[10px]"></i> PDF
-                                    </button>
+                                    <a href="formulario-control-seguimiento-cati-usgp.pdf" download title="Descargar Formulario PDF" class="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition flex items-center gap-1">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
                                 </div>
                             </td>
                         </tr>
@@ -175,48 +178,6 @@
         </div>
 
     </main>
-
-    <!-- MODAL DE SEGUIMIENTO (10 ETAPAS EN MODO CONSULTA PARA EL SOLICITANTE) -->
-    <div id="modalConsultaAvance" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-            
-            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-base" id="modalTituloTramite">Avance del Proceso de Registro</h3>
-                    <p class="text-xs text-red-200" id="modalCodigoTramite">Expediente: CATI-USGP-001-ABC</p>
-                </div>
-                <button type="button" onclick="cerrarAvanceModal()" class="text-white hover:text-red-200 text-xl font-bold">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <div class="p-6 overflow-y-auto space-y-4 flex-grow text-xs">
-                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                    <table class="w-full text-left border-collapse">
-                        <thead class="bg-slate-100 font-bold text-slate-700 border-b border-slate-200 text-xs">
-                            <tr>
-                                <th class="p-2.5">N.º Etapa</th>
-                                <th class="p-2.5">Responsable Oficial</th>
-                                <th class="p-2.5">Fecha</th>
-                                <th class="p-2.5">Observaciones del CATI</th>
-                                <th class="p-2.5 text-center">Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modalTablaEtapasBody" class="divide-y divide-slate-100 text-xs">
-                            <!-- Se rellena dinámicamente con JavaScript en modo solo lectura -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="bg-slate-50 p-4 border-t border-slate-200 flex justify-end">
-                <button type="button" onclick="cerrarAvanceModal()" class="px-5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition">
-                    Cerrar
-                </button>
-            </div>
-
-        </div>
-    </div>
 
     <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
@@ -233,52 +194,9 @@
         </div>
     </footer>
 
-    <!-- Lógica de Consulta de Etapas para el Solicitante -->
     <script>
-        const etapasEjemplo = [
-            { id: 1, nombre: "1. Solicitud recibida", resp: "Usuario / CATI", fecha: "2026-09-14", obs: "Ingresado vía portal web", estado: "listo" },
-            { id: 2, nombre: "2. Documentación y obra recibidas", resp: "CATI", fecha: "2026-09-15", obs: "Archivos completos y validados", estado: "listo" },
-            { id: 3, nombre: "3. Contrato de licencia", resp: "CATI", fecha: "2026-09-16", obs: "Revisión técnica de cláusulas en curso", estado: "proceso" },
-            { id: 4, nombre: "4. Firmas / Sec. General", resp: "Rector / Sec. Gral", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 5, nombre: "5. Escanear y subir información", resp: "CATI", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 6, nombre: "6. Solicitud de pago (Portal SENADI)", resp: "CATI", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 7, nombre: "7. Pago del Arancel", resp: "CATI", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 8, nombre: "8. Envío de documentación en físico y digital", resp: "CATI", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 9, nombre: "9. Verificación / Constancia SENADI", resp: "CATI / SENADI", fecha: "-", obs: "-", estado: "pendiente" },
-            { id: 10, nombre: "10. Resultado y cierre", resp: "CATI", fecha: "-", obs: "-", estado: "pendiente" }
-        ];
-
-        function verAvanceModal(codigo, titulo) {
-            document.getElementById('modalCodigoTramite').innerText = `Expediente: ${codigo}`;
-            document.getElementById('modalTituloTramite').innerText = titulo;
-
-            const tbody = document.getElementById('modalTablaEtapasBody');
-            tbody.innerHTML = '';
-
-            etapasEjemplo.forEach(etapa => {
-                let badge = '<span class="text-slate-400">Pendiente</span>';
-                if (etapa.estado === 'listo') {
-                    badge = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Completado</span>';
-                } else if (etapa.estado === 'proceso') {
-                    badge = '<span class="text-amber-600 font-bold"><i class="fa-solid fa-spinner"></i> En Proceso</span>';
-                }
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50 transition">
-                        <td class="p-2.5 font-semibold text-slate-800">${etapa.nombre}</td>
-                        <td class="p-2.5 text-slate-600">${etapa.resp}</td>
-                        <td class="p-2.5 text-slate-700">${etapa.fecha}</td>
-                        <td class="p-2.5 text-slate-600 italic">${etapa.obs}</td>
-                        <td class="p-2.5 text-center">${badge}</td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById('modalConsultaAvance').classList.remove('hidden');
-        }
-
-        function cerrarAvanceModal() {
-            document.getElementById('modalConsultaAvance').classList.add('hidden');
+        function verEstado(cod) {
+            alert(`Expediente: ${cod}\nEstado: En proceso (Etapa 2: Documentación y obra recibidas).`);
         }
     </script>
 </body>
