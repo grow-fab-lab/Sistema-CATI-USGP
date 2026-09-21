@@ -7,10 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Supabase JS CDN Oficial -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Cliente Centralizado Supabase -->
-    <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
@@ -26,7 +23,7 @@
                          class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
                 </div>
 
-                <!-- CENTRO: Perfil del Administrador -->
+                <!-- CENTRO: Perfil del Administrador / SuperUsuario -->
                 <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner backdrop-blur-sm">
                     <div class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">
                         SU
@@ -54,26 +51,77 @@
     <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
         
-        <!-- Encabezado de la Sección -->
+        <!-- Encabezado de la Sección y Botones de Acción de Superusuario -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Panel de Control General CATI</h1>
                 <p class="text-sm text-slate-500">Bandeja de gestión de expedientes y seguimiento del proceso de registro ante SENADI.</p>
             </div>
+
+            <!-- Botones exclusivos para Superusuario / Administración -->
+            <div class="flex items-center gap-3 flex-wrap">
+                <a href="registro_expediente.html" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2.5 rounded-lg font-medium text-xs shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-plus"></i> Agregar Expediente
+                </a>
+                <a href="admin_usuarios.html" class="bg-slate-800 hover:bg-slate-900 text-white px-4 py-2.5 rounded-lg font-medium text-xs shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i> Gestionar Usuarios
+                </a>
+            </div>
         </div>
 
-        <!-- Bandeja General de Expedientes con Buscador Avanzado -->
+        <!-- Tarjetas Resumen Administrativo -->
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-inbox"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-slate-800">12</span>
+                    <span class="text-xs text-slate-500 font-medium">Expedientes Recibidos</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-spinner"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-slate-800">8</span>
+                    <span class="text-xs text-slate-500 font-medium">En Seguimiento</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-lg flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-slate-800">3</span>
+                    <span class="text-xs text-slate-500 font-medium">En Trámite SENADI</span>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <span class="block text-2xl font-bold text-slate-800">1</span>
+                    <span class="text-xs text-slate-500 font-medium">Expedientes Cerrados</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bandeja General de Expedientes -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-3">
                 <h2 class="font-bold text-slate-700 text-sm">Bandeja General de Expedientes</h2>
                 
-                <!-- Buscador Avanzado (Autor, Cédula o N.º de Expediente) -->
-                <div class="relative w-full sm:w-80">
+                <div class="relative w-full sm:w-64">
                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 text-xs">
                         <i class="fa-solid fa-magnifying-glass"></i>
                     </span>
-                    <input type="text" id="inputBuscador" placeholder="Buscar por N.º expediente, autor o cédula..." 
-                           class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
+                    <input type="text" placeholder="Buscar por código o título..." class="w-full pl-8 pr-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
                 </div>
             </div>
 
@@ -82,24 +130,101 @@
                     <thead>
                         <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
                             <th class="p-4">N.º Expediente</th>
-                            <th class="p-4">Autor Principal / Cédula</th>
+                            <th class="p-4">Solicitante</th>
                             <th class="p-4">Título de la Obra</th>
                             <th class="p-4">Área / Tipo</th>
-                            <th class="p-4">Fecha</th>
-                            <th class="p-4 text-center">Documentos (PDF)</th>
-                            <th class="p-4 text-center">Estado</th>
+                            <th class="p-4">Asignado a</th>
+                            <th class="p-4">Estado</th>
+                            <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody id="tablaExpedientesAdmin" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="7" class="p-6 text-center text-xs text-slate-400">Cargando expedientes desde la base de datos...</td>
+                    <tbody class="divide-y divide-slate-100">
+                        
+                        <!-- Registro 1 -->
+                        <tr class="hover:bg-slate-50/80 transition">
+                            <td class="p-4 font-mono font-bold text-red-700">CATI-USGP-001-ABC</td>
+                            <td class="p-4 text-xs font-medium text-slate-800">
+                                Juan Carlos Pérez Gómez
+                                <span class="block text-[10px] text-slate-400">CI: 1312345678</span>
+                            </td>
+                            <td class="p-4 font-medium text-slate-800 text-xs">Sistema Web de Control de Expedientes CATI</td>
+                            <td class="p-4 text-xs text-slate-600">
+                                <span class="block font-semibold">Derecho de Autor</span>
+                                <span class="text-slate-400">Software</span>
+                            </td>
+                            <td class="p-4 text-xs text-slate-700 font-semibold">
+                                <span class="inline-flex items-center gap-1 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                    <i class="fa-solid fa-user-gear text-slate-500"></i> Ing. María Intriago
+                                </span>
+                            </td>
+                            <td class="p-4">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Etapa 2 / 10
+                                </span>
+                            </td>
+                            <td class="p-4 text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <button onclick="abrirModalEtapas('CATI-USGP-001-ABC')" class="px-3 py-1.5 text-xs font-semibold text-white bg-red-700 hover:bg-red-800 rounded-md transition shadow flex items-center gap-1">
+                                        <i class="fa-solid fa-list-check"></i> 10 Etapas
+                                    </button>
+                                    <a href="formulario-control-seguimiento-cati-usgp.pdf" download title="Descargar Formulario PDF Oficial" class="px-3 py-1.5 text-xs font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded-md transition flex items-center gap-1">
+                                        <i class="fa-solid fa-file-pdf"></i> PDF
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
+
                     </tbody>
                 </table>
             </div>
         </div>
 
     </main>
+
+    <!-- MODAL INTERACTIVO: MATRIZ DE LAS 10 ETAPAS -->
+    <div id="modalEtapas" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
+            
+            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
+                <div>
+                    <h3 class="font-bold text-base">Control y Seguimiento del Proceso (10 Etapas)</h3>
+                    <p class="text-xs text-red-200" id="modalCodigoExpediente">Expediente: CATI-USGP-001-ABC</p>
+                </div>
+                <button onclick="cerrarModalEtapas()" class="text-white hover:text-red-200 text-xl font-bold">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-4 flex-grow text-xs">
+                <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead class="bg-slate-100 font-bold text-slate-700 border-b border-slate-200 text-xs">
+                            <tr>
+                                <th class="p-2.5">N.º Etapa</th>
+                                <th class="p-2.5">Responsable Oficial</th>
+                                <th class="p-2.5">Fecha</th>
+                                <th class="p-2.5">Observaciones</th>
+                                <th class="p-2.5 text-center">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaEtapasBody" class="divide-y divide-slate-100 text-xs">
+                            <!-- Filas generadas por JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 border-t border-slate-200 flex justify-end gap-3">
+                <button onclick="cerrarModalEtapas()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-xs font-semibold transition">
+                    Cancelar
+                </button>
+                <button onclick="cerrarModalEtapas(); alert('¡Avances de las 10 etapas guardados correctamente!');" class="px-4 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg text-xs font-semibold shadow transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar Cambios
+                </button>
+            </div>
+
+        </div>
+    </div>
 
     <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
@@ -116,93 +241,48 @@
         </div>
     </footer>
 
-    <!-- Script de Carga y Buscador en Tiempo Real -->
+    <!-- Script de las 10 etapas -->
     <script>
-        let expedientesGlobales = [];
+        const etapasOficiales = [
+            { id: 1, nombre: "1. Solicitud recibida", responsable: "Usuario / CATI", fecha: "2026-09-14", obs: "Ingresado vía portal web", estado: "listo" },
+            { id: 2, nombre: "2. Documentación y obra recibidas", responsable: "CATI", fecha: "2026-09-15", obs: "Archivos completos y validados", estado: "listo" },
+            { id: 3, nombre: "3. Contrato de licencia", responsable: "CATI", fecha: "", obs: "Pendiente firma de autor", estado: "proceso" },
+            { id: 4, nombre: "4. Firmas / Sec. General", responsable: "Rector / Sec. Gral", fecha: "", obs: "", estado: "pendiente" },
+            { id: 5, nombre: "5. Escanear y subir información", responsable: "CATI", fecha: "", obs: "", estado: "pendiente" },
+            { id: 6, nombre: "6. Solicitud de pago (Portal SENADI)", responsable: "CATI", fecha: "", obs: "", estado: "pendiente" },
+            { id: 7, nombre: "7. Pago del Arancel", responsable: "CATI", fecha: "", obs: "", estado: "pendiente" },
+            { id: 8, nombre: "8. Envío de documentación en físico y digital", responsable: "CATI", fecha: "", obs: "", estado: "pendiente" },
+            { id: 9, nombre: "9. Verificación / Constancia SENADI", responsable: "CATI / SENADI", fecha: "", obs: "", estado: "pendiente" },
+            { id: 10, nombre: "10. Resultado y cierre", responsable: "CATI", fecha: "", obs: "", estado: "pendiente" }
+        ];
 
-        async function cargarExpedientes() {
-            try {
-                const { data, error } = await supabaseClient
-                    .from('expedientes')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+        function abrirModalEtapas(codigo) {
+            document.getElementById('modalCodigoExpediente').innerText = `Expediente: ${codigo}`;
+            const body = document.getElementById('tablaEtapasBody');
+            body.innerHTML = '';
 
-                if (error) throw error;
-                expedientesGlobales = data || [];
-                renderizarTabla(expedientesGlobales);
-            } catch (err) {
-                console.error('Error al cargar expedientes:', err);
-                document.getElementById('tablaExpedientesAdmin').innerHTML = `<tr><td colspan="7" class="p-6 text-center text-xs text-red-600">Error al conectar con Supabase: ${err.message}</td></tr>`;
-            }
-        }
+            etapasOficiales.forEach(e => {
+                let badge = '<span class="text-slate-400">Pendiente</span>';
+                if (e.estado === 'listo') badge = '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Completado</span>';
+                if (e.estado === 'proceso') badge = '<span class="text-amber-600 font-bold"><i class="fa-solid fa-spinner"></i> En Proceso</span>';
 
-        function renderizarTabla(lista) {
-            const tbody = document.getElementById('tablaExpedientesAdmin');
-            tbody.innerHTML = '';
-
-            if (!lista || lista.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-xs text-slate-400">No se encontraron expedientes registrados.</td></tr>`;
-                return;
-            }
-
-            lista.forEach(exp => {
-                let cedulaBtn = exp.archivo_cedula_url 
-                    ? `<a href="${exp.archivo_cedula_url}" target="_blank" class="px-2 py-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded transition inline-flex items-center gap-1" title="Ver Cédula"><i class="fa-solid fa-id-card"></i> Cédula</a>` 
-                    : ``;
-
-                let contratoBtn = exp.contrato_url 
-                    ? `<a href="${exp.contrato_url}" target="_blank" class="px-2 py-1 text-[11px] font-semibold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 rounded transition inline-flex items-center gap-1" title="Ver Contrato"><i class="fa-solid fa-file-pdf"></i> Contrato</a>` 
-                    : ``;
-
-                let obraBtn = exp.archivo_obra_url 
-                    ? `<a href="${exp.archivo_obra_url}" target="_blank" class="px-2 py-1 text-[11px] font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded transition inline-flex items-center gap-1" title="Ver Obra"><i class="fa-solid fa-folder-open"></i> Obra</a>` 
-                    : ``;
-
-                tbody.innerHTML += `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-mono font-bold text-red-700 text-xs">${exp.codigo_expediente || 'CATI-USGP-S/N'}</td>
-                        <td class="p-4 text-xs font-medium text-slate-800">
-                            ${exp.autor_nombre || 'N/D'}
-                            <span class="block text-[10px] text-slate-400">CI: ${exp.autor_cedula || 'N/D'}</span>
-                        </td>
-                        <td class="p-4 font-medium text-slate-800 text-xs">${exp.titulo_obra}</td>
-                        <td class="p-4 text-xs text-slate-600">
-                            <span class="block font-semibold">${exp.area_senadi}</span>
-                            <span class="text-slate-400">${exp.tipo_obra}</span>
-                        </td>
-                        <td class="p-4 text-xs text-slate-500">${new Date(exp.created_at).toLocaleDateString()}</td>
-                        <td class="p-4 text-center">
-                            <div class="flex items-center justify-center gap-1.5 flex-wrap">
-                                ${cedulaBtn}
-                                ${contratoBtn}
-                                ${obraBtn}
-                            </div>
-                        </td>
-                        <td class="p-4 text-center">
-                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                En Proceso
-                            </span>
-                        </td>
+                body.innerHTML += `
+                    <tr class="hover:bg-slate-50">
+                        <td class="p-2.5 font-semibold text-slate-800">${e.nombre}</td>
+                        <td class="p-2.5 text-slate-600 font-medium">${e.responsable}</td>
+                        <td class="p-2.5"><input type="date" value="${e.fecha}" class="border border-slate-300 rounded px-2 py-1 text-xs"></td>
+                        <td class="p-2.5"><input type="text" value="${e.obs}" placeholder="Observación..." class="border border-slate-300 rounded px-2 py-1 text-xs w-full"></td>
+                        <td class="p-2.5 text-center">${badge}</td>
                     </tr>
                 `;
             });
+
+            document.getElementById('modalEtapas').classList.remove('hidden');
         }
 
-        // Lógica del buscador en tiempo real (Nombre de autor, número de cédula o N.º de expediente)
-        document.getElementById('inputBuscador').addEventListener('input', (e) => {
-            const texto = e.target.value.toLowerCase().trim();
-            const filtrados = expedientesGlobales.filter(exp => {
-                const codigo = (exp.codigo_expediente || '').toLowerCase();
-                const autor = (exp.autor_nombre || '').toLowerCase();
-                const cedula = (exp.autor_cedula || '').toLowerCase();
-                const titulo = (exp.titulo_obra || '').toLowerCase();
-
-                return codigo.includes(texto) || autor.includes(texto) || cedula.includes(texto) || titulo.includes(texto);
-            });
-            renderizarTabla(filtrados);
-        });
-
-        document.addEventListener('DOMContentLoaded', cargarExpedientes);
+        function cerrarModalEtapas() {
+            document.getElementById('modalEtapas').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
