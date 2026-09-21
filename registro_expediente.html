@@ -7,7 +7,6 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
@@ -68,13 +67,14 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Área SENADI *</label>
                         <select id="areaSenadi" required class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                            <option value="">-- Seleccionar Área --</option>
+                            <option value="">-- Seleccionar --</option>
                             <option value="Derecho de Autor">Derecho de Autor</option>
                             <option value="Propiedad Industrial">Propiedad Industrial</option>
                             <option value="Obtenciones Vegetales">Obtenciones Vegetales</option>
                         </select>
                     </div>
-                    <!-- CORRECCIÓN: TIPO DE OBRA AHORA ES UN SELECTOR -->
+                    
+                    <!-- CORRECCIÓN: CAMPO RESTAURADO A SELECTOR DESPLEGABLE -->
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tipo / Género Específico *</label>
                         <select id="tipoObra" required class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
@@ -91,7 +91,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: AUTORES CON CARGA DE CÉDULA INDIVIDUAL (RESTAURADO) -->
+            <!-- SECCIÓN 2: AUTORES CON CÉDULAS INDIVIDUALES -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
                     <div class="flex items-center gap-3">
@@ -107,12 +107,10 @@
                     <!-- Autor Principal -->
                     <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative">
                         <span class="inline-block bg-red-800 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-3">Autor Principal</span>
-                        
-                        <!-- Mantiene el diseño original de 3 columnas -->
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label>
-                                <input type="text" id="autorNombre" required placeholder="Nombre del autor principal" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
+                                <input type="text" id="autorNombre" required placeholder="Nombre del autor" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label>
@@ -123,17 +121,15 @@
                                 <input type="text" id="autorTelefono" required placeholder="09XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
                             </div>
                         </div>
-
-                        <!-- Botón de cédula independiente debajo de los datos -->
-                        <div class="mt-3 pt-3 border-t border-slate-200">
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Archivo de Cédula de Identidad (PDF/JPG) *</label>
+                        <div class="mt-3 pt-3 border-t border-slate-200/60">
+                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Archivo de Cédula (PDF/JPG) *</label>
                             <input type="file" id="fileCedulaPrincipal" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: ARCHIVOS GENERALES (SOLO OBRA Y CONTRATO) -->
+            <!-- SECCIÓN 3: ARCHIVOS GENERALES (OBRA Y CONTRATO) -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
                     <div class="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">3</div>
@@ -141,11 +137,11 @@
                 </div>
                 <div class="space-y-4 text-xs">
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">1. Archivo Digital de la Obra Completa (ZIP/PDF/DOCX) *</label>
+                        <label class="block font-semibold text-slate-700 mb-1">1. Obra Completa (ZIP/PDF/DOCX) *</label>
                         <input type="file" id="fileObra" required accept=".pdf,.zip,.rar,.docx" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
                     </div>
                     <div>
-                        <label class="block font-semibold text-slate-700 mb-1">2. Contrato de Licencia Firmado (PDF) *</label>
+                        <label class="block font-semibold text-slate-700 mb-1">2. Contrato Firmado (PDF) *</label>
                         <input type="file" id="fileContrato" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
                     </div>
                 </div>
@@ -156,7 +152,7 @@
                 <a href="#" id="btnCancelar" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-50 transition">
                     Cancelar
                 </a>
-                <button type="submit" id="btnSubmit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-md transition transform hover:-translate-y-0.5 flex items-center gap-2">
+                <button type="submit" id="btnSubmit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-md transition transform flex items-center gap-2">
                     <i class="fa-solid fa-paper-plane"></i> Guardar y Crear Expediente
                 </button>
             </div>
@@ -185,9 +181,14 @@
                 document.getElementById('userName').innerText = profile.nombre_completo;
                 document.getElementById('userInitial').innerText = profile.nombre_completo.substring(0,2).toUpperCase();
                 currentRol = profile.rol;
-                document.getElementById('userRole').innerText = 'Rol: ' + currentRol.toUpperCase();
+                
+                let roleText = 'Solicitante';
+                if (currentRol === 'super') roleText = 'SuperUsuario';
+                if (currentRol === 'admin') roleText = 'Administrador CATI';
+                if (currentRol === 'asistente') roleText = 'Asistente CATI';
+                document.getElementById('userRole').innerText = 'Rol: ' + roleText;
 
-                // REGLA: Si NO es solicitante, el campo autor queda en blanco para que registre al estudiante/docente.
+                // REGLA: Nombre en blanco si es Super, Admin o Asistente.
                 if (currentRol === 'solicitante') {
                     document.getElementById('autorNombre').value = profile.nombre_completo;
                 } else {
@@ -212,26 +213,17 @@
             
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-3">
-                    <span class="inline-block bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Coautor #${contadorCoautores}</span>
+                    <span class="inline-block bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Coautor #${contadorCoautores - 1}</span>
                     <button type="button" onclick="document.getElementById('${div.id}').remove()" class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1">
                         <i class="fa-solid fa-trash-can"></i> Eliminar
                     </button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label>
-                        <input type="text" required placeholder="Nombre del coautor" class="coautor-nombre w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label>
-                        <input type="text" required placeholder="13XXXXXXXX" class="coautor-cedula w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label>
-                        <input type="text" required placeholder="09XXXXXXXX" class="coautor-telefono w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                    </div>
+                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label><input type="text" required class="coautor-nombre w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
+                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label><input type="text" required class="coautor-cedula w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
+                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label><input type="text" required class="coautor-telefono w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                 </div>
-                <div class="mt-3 pt-3 border-t border-slate-200">
+                <div class="mt-3 pt-3 border-t border-slate-200/60">
                     <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Archivo de Cédula (PDF/JPG) *</label>
                     <input type="file" required accept=".pdf,.jpg,.jpeg,.png" class="coautor-file block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
                 </div>
@@ -255,13 +247,13 @@
             document.getElementById('errorContainer').classList.add('hidden');
             
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Guardando y subiendo archivos...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Subiendo archivos...';
 
             try {
                 const autorCedula = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${autorCedula.slice(-3)}`;
                 
-                // 1. Subir archivos principales
+                // 1. Subir archivos
                 const urlCedulaPrincipal = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
@@ -283,7 +275,7 @@
 
                 if (expError) throw expError;
 
-                // 3. Crear Coautores con sus respectivas cédulas
+                // 3. Crear Coautores
                 const coautoresItems = document.querySelectorAll('.coautor-item');
                 for (let item of coautoresItems) {
                     const fileInput = item.querySelector('.coautor-file');
@@ -298,7 +290,7 @@
                     }]);
                 }
 
-                alert(`¡Expediente creado con éxito! Código asignado: ${cod}`);
+                alert(`¡Expediente creado con éxito! Código: ${cod}`);
                 window.location.href = (currentRol === 'solicitante') ? 'mis_tramites.html' : 'admin_dashboard.html';
 
             } catch (err) {
