@@ -7,7 +7,7 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-   <!-- Supabase JS CDN Oficial -->
+    <!-- Supabase JS CDN Oficial -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Cliente Centralizado Supabase -->
     <script src="supabaseClient.js"></script>
@@ -91,10 +91,50 @@
             </form>
 
             <div class="p-4 bg-slate-50 border-t border-slate-100 text-center text-xs text-slate-500">
-                ¿No tienes una cuenta? <a href="#" class="font-bold text-red-700 hover:underline">Regístrate aquí</a>
+                ¿No tienes una cuenta? <button type="button" onclick="abrirModalRegistro()" class="font-bold text-red-700 hover:underline">Regístrate aquí</button>
             </div>
         </div>
     </main>
+
+    <!-- MODAL FLOTANTE: REGISTRO DE NUEVA CUENTA -->
+    <div id="modalRegistro" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-fadeIn">
+            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-user-plus mr-2"></i> Registro de Nueva Cuenta</h3>
+                <button type="button" onclick="cerrarModalRegistro()" class="text-white hover:text-red-200 text-xl font-bold">&times;</button>
+            </div>
+            
+            <form id="registroForm" class="p-6 space-y-4 text-xs">
+                
+                <!-- Alerta de Registro -->
+                <div id="regErrorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg font-semibold text-center">
+                    <span id="regErrorTexto"></span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 uppercase mb-1">Nombre Completo *</label>
+                    <input type="text" id="regNombre" required placeholder="Ej. Juan Carlos Pérez" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 transition">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 uppercase mb-1">Correo Institucional (@sangregorio.edu.ec) *</label>
+                    <input type="email" id="regEmail" required placeholder="usuario@sangregorio.edu.ec" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 transition">
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 uppercase mb-1">Contraseña (Mínimo 6 caracteres) *</label>
+                    <input type="password" id="regPassword" required placeholder="••••••••" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 transition">
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalRegistro()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold transition">Cancelar</button>
+                    <button type="submit" id="btnRegistrar" class="px-5 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg font-semibold shadow transition flex items-center gap-1.5">
+                        Registrarme
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
@@ -111,20 +151,19 @@
         </div>
     </footer>
 
-    <!-- Lógica de Autenticación y Validación de Dominio -->
+    <!-- Lógica de Autenticación y Registro -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof supabaseClient === 'undefined') {
-                const errContainer = document.getElementById('errorContainer');
-                document.getElementById('errorTexto').innerText = 'Error: No se ha cargado supabaseClient.js correctamente.';
-                errContainer.classList.remove('hidden');
-                document.getElementById('btnSubmit').disabled = true;
-            }
-        });
+        // Funciones del Modal
+        function abrirModalRegistro() {
+            document.getElementById('modalRegistro').classList.remove('hidden');
+        }
+        function cerrarModalRegistro() {
+            document.getElementById('modalRegistro').classList.add('hidden');
+        }
 
+        // Lógica de Inicio de Sesión
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
             const password = document.getElementById('passwordInput').value;
             const btn = document.getElementById('btnSubmit');
@@ -132,24 +171,17 @@
             const errorTexto = document.getElementById('errorTexto');
 
             btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando credenciales...';
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando...';
             errorContainer.classList.add('hidden');
 
             try {
-                // 1. Validación estricta del dominio institucional
                 if (!email.endsWith('@sangregorio.edu.ec')) {
                     throw new Error('Acceso denegado: Solo se permiten correos institucionales (@sangregorio.edu.ec).');
                 }
 
-                // 2. Iniciar sesión en Supabase Auth
-                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({
-                    email: email,
-                    password: password
-                });
-
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (authError) throw authError;
 
-                // 3. Obtener el rol del usuario desde la tabla perfiles (profiles)
                 const { data: profileData, error: profileError } = await supabaseClient
                     .from('profiles')
                     .select('rol')
@@ -158,28 +190,74 @@
 
                 if (profileError) throw profileError;
 
-                // 4. Redirección basada en el rol
                 const rol = profileData.rol;
                 if (rol === 'solicitante') {
                     window.location.href = 'mis_tramites.html';
                 } else if (rol === 'asistente' || rol === 'admin' || rol === 'super') {
                     window.location.href = 'admin_dashboard.html';
                 } else {
-                    throw new Error('Su cuenta no tiene un rol válido asignado en el sistema.');
+                    window.location.href = 'mis_tramites.html';
                 }
-
             } catch (err) {
                 console.error('Error de inicio de sesión:', err);
-                
-                if (err.message === 'Invalid login credentials') {
-                    errorTexto.innerText = 'El correo o la contraseña son incorrectos.';
-                } else {
-                    errorTexto.innerText = err.message;
-                }
-                
+                errorTexto.innerText = err.message === 'Invalid login credentials' ? 'Correo o contraseña incorrectos.' : err.message;
                 errorContainer.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = 'Ingresar a la Plataforma';
+            }
+        });
+
+        // Lógica de Registro de Nueva Cuenta
+        document.getElementById('registroForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nombre = document.getElementById('regNombre').value.trim();
+            const email = document.getElementById('regEmail').value.trim().toLowerCase();
+            const password = document.getElementById('regPassword').value;
+            const btnReg = document.getElementById('btnRegistrar');
+            const regErrorContainer = document.getElementById('regErrorContainer');
+            const regErrorTexto = document.getElementById('regErrorTexto');
+
+            regErrorContainer.classList.add('hidden');
+
+            if (!email.endsWith('@sangregorio.edu.ec')) {
+                regErrorTexto.innerText = 'El correo debe terminar en @sangregorio.edu.ec';
+                regErrorContainer.classList.remove('hidden');
+                return;
+            }
+
+            btnReg.disabled = true;
+            btnReg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registrando...';
+
+            try {
+                // 1. Registrar en Supabase Auth
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password
+                });
+
+                if (authError) throw authError;
+
+                if (authData.user) {
+                    // 2. Crear perfil con rol por defecto 'solicitante'
+                    const { error: profileError } = await supabaseClient
+                        .from('profiles')
+                        .insert([
+                            { id: authData.user.id, nombre_completo: nombre, email: email, rol: 'solicitante' }
+                        ]);
+
+                    if (profileError) throw profileError;
+                }
+
+                alert('¡Cuenta creada exitosamente! Ya puedes iniciar sesión con tus credenciales.');
+                cerrarModalRegistro();
+                document.getElementById('registroForm').reset();
+            } catch (err) {
+                console.error('Error en registro:', err);
+                regErrorTexto.innerText = err.message;
+                regErrorContainer.classList.remove('hidden');
+            } finally {
+                btnReg.disabled = false;
+                btnReg.innerHTML = 'Registrarme';
             }
         });
     </script>
