@@ -252,16 +252,16 @@
                 const autorCedula = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${autorCedula.slice(-3)}`;
                 
-                // 1. Subir archivos principales
+                // 1. Subir archivos
                 const urlCedulaPrincipal = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
-                // 2. Crear Expediente (CORRECCIÓN: Se envía 'usuario_id' en lugar de 'user_id')
+                // 2. Crear Expediente (CORRECCIÓN: area_pi en lugar de area_senadi)
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod,
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
-                    area_senadi: document.getElementById('areaSenadi').value,
+                    area_pi: document.getElementById('areaSenadi').value,
                     tipo_obra: document.getElementById('tipoObra').value.trim(),
                     autor_nombre: document.getElementById('autorNombre').value.trim(),
                     autor_cedula: autorCedula,
