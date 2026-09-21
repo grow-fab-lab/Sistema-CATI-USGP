@@ -74,7 +74,10 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Contraseña</label>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="block text-xs font-semibold text-slate-700 uppercase">Contraseña</label>
+                        <button type="button" onclick="abrirModalRecuperar()" class="text-[11px] font-semibold text-red-700 hover:underline">¿Olvidaste tu contraseña?</button>
+                    </div>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
                             <i class="fa-solid fa-key"></i>
@@ -106,7 +109,6 @@
             
             <form id="registroForm" class="p-6 space-y-4 text-xs">
                 
-                <!-- Alerta de Registro -->
                 <div id="regErrorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg font-semibold text-center">
                     <span id="regErrorTexto"></span>
                 </div>
@@ -136,6 +138,36 @@
         </div>
     </div>
 
+    <!-- MODAL FLOTANTE: RECUPERAR CONTRASEÑA -->
+    <div id="modalRecuperar" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden animate-fadeIn">
+            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
+                <h3 class="font-bold text-base"><i class="fa-solid fa-key mr-2"></i> Recuperar Contraseña</h3>
+                <button type="button" onclick="cerrarModalRecuperar()" class="text-white hover:text-red-200 text-xl font-bold">&times;</button>
+            </div>
+            
+            <form id="recuperarForm" class="p-6 space-y-4 text-xs">
+                <p class="text-slate-600">Ingrese su correo institucional y le enviaremos un enlace cifrado para restablecer su contraseña.</p>
+                
+                <div id="recErrorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg font-semibold text-center">
+                    <span id="recErrorTexto"></span>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 uppercase mb-1">Correo Institucional (@sangregorio.edu.ec) *</label>
+                    <input type="email" id="recEmail" required placeholder="usuario@sangregorio.edu.ec" class="w-full px-3.5 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 transition">
+                </div>
+
+                <div class="pt-2 flex justify-end gap-2">
+                    <button type="button" onclick="cerrarModalRecuperar()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold transition">Cancelar</button>
+                    <button type="submit" id="btnRecuperar" class="px-5 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg font-semibold shadow transition flex items-center gap-1.5">
+                        Enviar Enlace
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
@@ -151,17 +183,15 @@
         </div>
     </footer>
 
-    <!-- Lógica de Autenticación y Registro -->
+    <!-- Lógica de Autenticación, Registro y Recuperación -->
     <script>
-        // Funciones del Modal
-        function abrirModalRegistro() {
-            document.getElementById('modalRegistro').classList.remove('hidden');
-        }
-        function cerrarModalRegistro() {
-            document.getElementById('modalRegistro').classList.add('hidden');
-        }
+        // Modales
+        function abrirModalRegistro() { document.getElementById('modalRegistro').classList.remove('hidden'); }
+        function cerrarModalRegistro() { document.getElementById('modalRegistro').classList.add('hidden'); }
+        function abrirModalRecuperar() { document.getElementById('modalRecuperar').classList.remove('hidden'); }
+        function cerrarModalRecuperar() { document.getElementById('modalRecuperar').classList.add('hidden'); }
 
-        // Lógica de Inicio de Sesión
+        // Inicio de Sesión
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('emailInput').value.trim().toLowerCase();
@@ -207,7 +237,7 @@
             }
         });
 
-        // Lógica de Registro de Nueva Cuenta
+        // Registro de Nueva Cuenta
         document.getElementById('registroForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const nombre = document.getElementById('regNombre').value.trim();
@@ -229,35 +259,72 @@
             btnReg.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registrando...';
 
             try {
-                // 1. Registrar en Supabase Auth
-                const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                    email: email,
-                    password: password
-                });
-
+                const { data: authData, error: authError } = await supabaseClient.auth.signUp({ email, password });
                 if (authError) throw authError;
 
                 if (authData.user) {
-                    // 2. Crear perfil con rol por defecto 'solicitante'
                     const { error: profileError } = await supabaseClient
                         .from('profiles')
-                        .insert([
+                        .upsert([
                             { id: authData.user.id, nombre_completo: nombre, email: email, rol: 'solicitante' }
-                        ]);
+                        ], { onConflict: 'id' });
 
                     if (profileError) throw profileError;
                 }
 
-                alert('¡Cuenta creada exitosamente! Ya puedes iniciar sesión con tus credenciales.');
+                alert('¡Cuenta creada exitosamente! Ya puedes iniciar sesión.');
                 cerrarModalRegistro();
                 document.getElementById('registroForm').reset();
             } catch (err) {
                 console.error('Error en registro:', err);
-                regErrorTexto.innerText = err.message;
+                if (err.message && (err.message.includes('already registered') || err.message.includes('User already registered'))) {
+                    regErrorTexto.innerText = 'correo registrado poes...';
+                } else {
+                    regErrorTexto.innerText = err.message;
+                }
                 regErrorContainer.classList.remove('hidden');
             } finally {
                 btnReg.disabled = false;
                 btnReg.innerHTML = 'Registrarme';
+            }
+        });
+
+        // Recuperar Contraseña
+        document.getElementById('recuperarForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('recEmail').value.trim().toLowerCase();
+            const btnRec = document.getElementById('btnRecuperar');
+            const recErrorContainer = document.getElementById('recErrorContainer');
+            const recErrorTexto = document.getElementById('recErrorTexto');
+
+            recErrorContainer.classList.add('hidden');
+
+            if (!email.endsWith('@sangregorio.edu.ec')) {
+                recErrorTexto.innerText = 'El correo debe terminar en @sangregorio.edu.ec';
+                recErrorContainer.classList.remove('hidden');
+                return;
+            }
+
+            btnRec.disabled = true;
+            btnRec.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Enviando...';
+
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+                    redirectTo: window.location.origin + '/index.html',
+                });
+
+                if (error) throw error;
+
+                alert('¡Correo de recuperación enviado con éxito! Revisa tu bandeja de entrada.');
+                cerrarModalRecuperar();
+                document.getElementById('recuperarForm').reset();
+            } catch (err) {
+                console.error('Error al recuperar contraseña:', err);
+                recErrorTexto.innerText = err.message;
+                recErrorContainer.classList.remove('hidden');
+            } finally {
+                btnRec.disabled = false;
+                btnRec.innerHTML = 'Enviar Enlace';
             }
         });
     </script>
