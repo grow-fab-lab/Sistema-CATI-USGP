@@ -238,15 +238,17 @@
                 const ced = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${ced.slice(-3)}`;
                 
+                // Subir archivos principales
                 const urlCedula = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
+                // Inserción en tabla expedientes con los nombres de columnas corregidos
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod, 
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
                     area_pi: document.getElementById('areaSenadi').value, 
-                    tipo_obra: document.getElementById('tipoObra').value.trim(),
+                    tipo_especifico: document.getElementById('tipoObra').value.trim(),
                     autor_nombre: document.getElementById('autorNombre').value.trim(), 
                     autor_cedula: ced,
                     autor_telefono: document.getElementById('autorTelefono').value.trim(), 
@@ -259,6 +261,7 @@
                 
                 if (expError) throw expError;
 
+                // Guardar coautores si existen
                 const coautoresItems = document.querySelectorAll('.coautor-item');
                 for (let item of coautoresItems) {
                     const uCed = await subirArchivo(item.querySelector('.coautor-file').files[0], 'cedulas');
