@@ -23,7 +23,7 @@
                         <span class="block font-semibold text-white leading-tight" id="userName">Cargando...</span>
                         <span class="text-red-200 text-[10px]" id="userRole">Rol: Solicitante</span>
                     </div>
-                    <a href="index.html" onclick="supabaseClient.auth.signOut()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </div>
         </div>
@@ -119,29 +119,23 @@
     <script>
         let currentUser = null, currentRol = 'solicitante', contadorCoautores = 1;
 
+        async function cerrarSesion() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
         // Lógica de dependencia Área -> Tipo Específico SENADI
         const categoriasSenadi = {
             "Derecho de Autor": [
-                "Obras Literarias", 
-                "Obras Artísticas", 
-                "Obras Musicales", 
-                "Obras Audiovisuales", 
-                "Software / Programas de Ordenador", 
-                "Bases de Datos",
-                "Otra (Derecho de Autor)"
+                "Obras Literarias", "Obras Artísticas", "Obras Musicales", "Obras Audiovisuales", 
+                "Software / Programas de Ordenador", "Bases de Datos", "Otra (Derecho de Autor)"
             ],
             "Propiedad Industrial": [
-                "Marca (Signo Distintivo)", 
-                "Patente de Invención", 
-                "Modelo de Utilidad", 
-                "Diseño Industrial", 
-                "Lema Comercial", 
-                "Nombre Comercial",
-                "Otra (Propiedad Industrial)"
+                "Marca (Signo Distintivo)", "Patente de Invención", "Modelo de Utilidad", 
+                "Diseño Industrial", "Lema Comercial", "Nombre Comercial", "Otra (Propiedad Industrial)"
             ],
             "Obtenciones Vegetales": [
-                "Variedad Vegetal",
-                "Otra (Obtención Vegetal)"
+                "Variedad Vegetal", "Otra (Obtención Vegetal)"
             ]
         };
 
@@ -168,7 +162,7 @@
             }
         });
 
-        // Cargar datos de usuario en sesión
+        // Cargar datos de usuario
         async function cargarUsuario() {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) { window.location.href = 'index.html'; return; }
@@ -193,7 +187,7 @@
             }
         }
 
-        // Agregar formulario de coautor dinámicamente
+        // Formulario Dinámico de Coautores
         function agregarCoautor() {
             contadorCoautores++;
             const div = document.createElement('div');
@@ -217,7 +211,6 @@
             document.getElementById('contenedorAutores').appendChild(div);
         }
 
-        // Subir archivo a Supabase Storage
         async function subirArchivo(file, carpeta) {
             if (!file) return null;
             const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
@@ -227,7 +220,7 @@
             return data.publicUrl;
         }
 
-        // Envío del formulario
+        // Envío General del Trámite
         document.getElementById('formExpediente').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             const btn = document.getElementById('btnSubmit'); 
@@ -238,12 +231,10 @@
                 const ced = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${ced.slice(-3)}`;
                 
-                // Subir archivos principales
                 const urlCedula = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
-                // Inserción en tabla expedientes con los nombres de columnas corregidos
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod, 
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
@@ -261,7 +252,6 @@
                 
                 if (expError) throw expError;
 
-                // Guardar coautores si existen
                 const coautoresItems = document.querySelectorAll('.coautor-item');
                 for (let item of coautoresItems) {
                     const uCed = await subirArchivo(item.querySelector('.coautor-file').files[0], 'cedulas');

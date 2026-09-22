@@ -23,7 +23,7 @@
                         <span id="userName" class="block font-semibold text-white leading-tight">Cargando...</span>
                         <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
                     </div>
-                    <a href="index.html" onclick="supabaseClient.auth.signOut()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    <button onclick="cerrarSesion()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </div>
         </div>
@@ -35,9 +35,13 @@
                 <h1 class="text-2xl font-bold text-slate-800">Mis Trámites y Expedientes</h1>
                 <p class="text-sm text-slate-500">Gestione y revise el estado de sus registros ante el CATI USGP.</p>
             </div>
-            <a href="registro_expediente.html" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md transition flex items-center gap-2">
-                <i class="fa-solid fa-plus"></i> Crear Nueva Solicitud
-            </a>
+            
+            <div class="flex flex-col items-end">
+                <button id="btnCrearTramite" onclick="verificarLimiteYCrear()" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Crear Nueva Solicitud
+                </button>
+                <span id="mensajeLimite" class="text-[10px] font-bold text-red-600 mt-1 hidden">Límite alcanzado: Máximo 3 trámites en proceso.</span>
+            </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
@@ -68,7 +72,7 @@
                             <th class="p-4">Título de la Obra</th>
                             <th class="p-4">Área / Tipo</th>
                             <th class="p-4">Fecha</th>
-                            <th class="p-4">Estado</th>
+                            <th class="p-4 text-center">Estado</th>
                         </tr>
                     </thead>
                     <tbody id="tablaMisTramitesBody" class="divide-y divide-slate-100">
@@ -84,6 +88,22 @@
     </footer>
 
     <script>
+        let tramitesEnProceso = 0;
+
+        async function cerrarSesion() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
+        // Verifica la regla de los 3 trámites máximos
+        function verificarLimiteYCrear() {
+            if (tramitesEnProceso >= 3) {
+                document.getElementById('mensajeLimite').classList.remove('hidden');
+            } else {
+                window.location.href = 'registro_expediente.html';
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) { window.location.href = 'index.html'; return; }
@@ -92,11 +112,7 @@
             const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
             
             if (profile) {
-                // Función para forzar mayúsculas en Nombres y Apellidos
-                const formatearNombre = (texto) => {
-                    return texto.toLowerCase().split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' ');
-                };
-                
+                const formatearNombre = (texto) => texto.toLowerCase().split(' ').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
                 const nombreFormateado = formatearNombre(profile.nombre_completo);
                 document.getElementById('userName').innerText = nombreFormateado;
                 
@@ -111,9 +127,11 @@
             const { data: expedientes } = await supabaseClient.from('expedientes').select('*').eq('usuario_id', user.id).order('created_at', { ascending: false });
             const lista = expedientes || [];
 
+            tramitesEnProceso = lista.filter(e => e.estado_general !== 'cerrado' && e.estado_general !== 'archivado').length;
+
             document.getElementById('statTotales').innerText = lista.length;
-            document.getElementById('statProceso').innerText = lista.filter(e => e.estado_general !== 'cerrado').length;
-            document.getElementById('statFinalizados').innerText = lista.filter(e => e.estado_general === 'cerrado').length;
+            document.getElementById('statProceso').innerText = tramitesEnProceso;
+            document.getElementById('statFinalizados').innerText = lista.length - tramitesEnProceso;
             document.getElementById('textoContador').innerText = `Mostrando ${lista.length} expediente(s)`;
 
             const tbody = document.getElementById('tablaMisTramitesBody');
@@ -124,13 +142,27 @@
 
             tbody.innerHTML = '';
             lista.forEach(exp => {
+                let badgeClass = "bg-blue-50 text-blue-700 border-blue-200"; // En Proceso
+                let estadoTexto = "En Revisión";
+
+                if (exp.estado_general === 'requiere_correccion') {
+                    badgeClass = "bg-amber-50 text-amber-700 border-amber-200";
+                    estadoTexto = "Requiere Corrección";
+                } else if (exp.estado_general === 'cerrado') {
+                    badgeClass = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                    estadoTexto = "Finalizado";
+                }
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 transition text-xs">
                         <td class="p-4 font-mono font-bold text-red-700">${exp.codigo_expediente}</td>
                         <td class="p-4 font-medium text-slate-800">${exp.titulo_obra}</td>
-                        <td class="p-4 text-slate-600"><span class="block font-semibold">${exp.area_pi}</span><span class="text-slate-400">${exp.tipo_obra}</span></td>
+                        <td class="p-4 text-slate-600"><span class="block font-semibold">${exp.area_pi}</span><span class="text-slate-400">${exp.tipo_especifico}</span></td>
                         <td class="p-4 text-slate-500">${new Date(exp.created_at).toLocaleDateString()}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 rounded-full font-semibold bg-amber-50 text-amber-700 border border-amber-200">Etapa ${exp.etapa_actual || 1}/10</span></td>
+                        <td class="p-4 text-center">
+                            <span class="block px-2.5 py-1 mb-1 rounded-full font-semibold border ${badgeClass}">${estadoTexto}</span>
+                            <span class="text-[10px] text-slate-400 font-bold uppercase">Etapa ${exp.etapa_actual || 1} / 10</span>
+                        </td>
                     </tr>
                 `;
             });

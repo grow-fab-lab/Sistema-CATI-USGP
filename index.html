@@ -44,6 +44,7 @@
                     <span id="successTexto"></span>
                 </div>
 
+                <!-- FORMULARIO DE INICIO DE SESIÓN -->
                 <form id="formLogin" class="space-y-4 block">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Correo Institucional</label>
@@ -71,6 +72,7 @@
                     </button>
                 </form>
 
+                <!-- FORMULARIO DE REGISTRO -->
                 <form id="formRegistro" class="space-y-4 hidden">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nombres y Apellidos Completos</label>
@@ -149,6 +151,7 @@
             }
         }
 
+        // LÓGICA DE INICIO DE SESIÓN
         document.getElementById('formLogin').addEventListener('submit', async (e) => {
             e.preventDefault(); errContainer.classList.add('hidden');
             const btn = document.getElementById('btnLoginSubmit');
@@ -167,6 +170,7 @@
             }
         });
 
+        // LÓGICA DE REGISTRO DE USUARIO SOLICITANTE
         document.getElementById('formRegistro').addEventListener('submit', async (e) => {
             e.preventDefault(); errContainer.classList.add('hidden'); successContainer.classList.add('hidden');
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
@@ -176,12 +180,26 @@
                 errTexto.innerText = "Solo se permiten correos @sangregorio.edu.ec."; errContainer.classList.remove('hidden'); return;
             }
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registrando...'; btn.disabled = true;
+            
             try {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password: document.getElementById('regPassword').value });
+                // Al registrar, enviamos los datos extra (metadata) para que el Trigger de DB los procese.
+                const { data, error } = await supabaseClient.auth.signUp({ 
+                    email, 
+                    password: document.getElementById('regPassword').value,
+                    options: {
+                        data: {
+                            nombre_completo: document.getElementById('regNombre').value.trim(),
+                            rol: 'solicitante'
+                        }
+                    }
+                });
+                
                 if (error) throw error;
-                if (data.user) await supabaseClient.from('profiles').insert([{ id: data.user.id, nombre_completo: document.getElementById('regNombre').value.trim(), email: email, rol: 'solicitante' }]);
-                successTexto.innerText = "¡Cuenta creada con éxito! Ya puedes iniciar sesión."; successContainer.classList.remove('hidden');
-                document.getElementById('formRegistro').reset(); setTimeout(() => cambiarTab('login'), 3000);
+                
+                successTexto.innerText = "¡Cuenta creada con éxito! Ya puedes iniciar sesión."; 
+                successContainer.classList.remove('hidden');
+                document.getElementById('formRegistro').reset(); 
+                setTimeout(() => cambiarTab('login'), 3000);
             } catch (err) {
                 errTexto.innerText = err.message; errContainer.classList.remove('hidden');
             } finally {
