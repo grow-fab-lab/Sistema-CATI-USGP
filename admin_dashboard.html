@@ -3,197 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de Administración - CATI USGP</title>
+    <title>Panel de Administración - Sistema CATI USGP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
-    
-    <!-- NAVBAR -->
-    <nav class="bg-slate-900 text-white shadow-lg border-b border-slate-800">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="bg-white px-2 py-1 rounded-lg"><img src="logo-emprendimiento.jpg" class="h-8"></div>
-                <span class="font-bold text-sm tracking-wide">ADMINISTRACIÓN CATI</span>
+
+    <!-- HEADER INSTITUCIONAL -->
+    <header class="bg-red-800 text-white shadow-lg border-b border-red-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white px-3 py-1 rounded-xl shadow-md">
+                    <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-wide uppercase">Panel de Administración CATI</h1>
+                    <p class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</p>
+                </div>
             </div>
-            <div class="flex items-center gap-6">
-                <div class="hidden md:flex gap-4 text-sm font-semibold">
-                    <a href="admin_dashboard.html" class="text-red-400 border-b-2 border-red-400 pb-1">Gestión de Expedientes</a>
-                    <a href="admin_usuarios.html" id="linkUsuarios" class="text-slate-300 hover:text-white hidden">Gestión de Usuarios</a>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden sm:block">
+                    <p id="userNombre" class="text-xs font-semibold text-white">Cargando...</p>
+                    <span id="userRolBadge" class="inline-block px-2 py-0.5 text-[10px] font-bold uppercase rounded bg-red-900 text-red-100">Superusuario</span>
                 </div>
-                <div class="flex items-center gap-3 bg-slate-800 px-4 py-1.5 rounded-full border border-slate-700">
-                    <div id="userInitials" class="w-7 h-7 rounded-full bg-red-700 text-white flex items-center justify-center font-bold text-xs">--</div>
-                    <div class="text-left text-xs hidden sm:block">
-                        <span id="userName" class="block font-semibold text-white">Cargando...</span>
-                        <span id="userRole" class="text-slate-400 text-[10px] uppercase">--</span>
-                    </div>
-                    <button onclick="cerrarSesion()" class="text-slate-400 hover:text-red-400 ml-2"><i class="fa-solid fa-power-off"></i></button>
-                </div>
+                <button onclick="cerrarSesion()" class="bg-red-900 hover:bg-red-950 text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-right-from-bracket"></i> Salir
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- NAVEGACIÓN SECUNDARIA / PESTAÑAS DE ADMIN -->
+    <nav class="bg-white shadow-sm border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-2.5">
+            <div class="flex gap-2">
+                <a href="admin_dashboard.html" class="px-4 py-2 bg-red-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open"></i> Gestión de Expedientes
+                </a>
+                <a id="navUsuarios" href="admin_usuarios.html" class="hidden px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i> Gestión de Usuarios
+                </a>
+            </div>
+            <div class="text-xs text-slate-500 font-medium">
+                Módulo Operativo V1.2
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-8 px-4 flex-grow w-full">
-        <div class="flex justify-between items-end mb-6">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+        
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800">Control de Expedientes</h1>
-                <p class="text-sm text-slate-500">Revise, audite y actualice el estado de los trámites solicitados.</p>
+                <h2 class="text-xl font-bold text-slate-800">Expedientes Registrados en el Sistema</h2>
+                <p class="text-xs text-slate-500">Supervisión, avance de etapas y control de propiedad intelectual.</p>
             </div>
-            <button onclick="cargarExpedientes()" class="text-sm bg-white border border-slate-300 px-4 py-2 rounded-lg font-semibold text-slate-700 hover:bg-slate-50 shadow-sm"><i class="fa-solid fa-rotate-right"></i> Actualizar</button>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <input type="text" id="inputBuscar" placeholder="Buscar por título, autor o código..." 
+                       class="px-3 py-2 text-xs rounded-lg border border-slate-300 w-full md:w-64 focus:ring-2 focus:ring-red-700">
+                <select id="filtroEstado" class="px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700">
+                    <option value="">Todos los estados</option>
+                    <option value="en_revision">En Revisión</option>
+                    <option value="requiere_correccion">Requiere Corrección</option>
+                    <option value="cerrado">Cerrado</option>
+                    <option value="archivado">Archivado</option>
+                </select>
+            </div>
         </div>
 
-        <!-- TABLA -->
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            <table class="w-full text-left text-sm">
-                <thead>
-                    <tr class="bg-slate-50 border-b text-xs text-slate-600 uppercase">
-                        <th class="p-4">Código / Fecha</th>
-                        <th class="p-4">Obra y Área</th>
-                        <th class="p-4">Solicitante</th>
-                        <th class="p-4 text-center">Estado</th>
-                        <th class="p-4 text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaExpedientes" class="divide-y divide-slate-100">
-                    <tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold">Cargando datos...</td></tr>
-                </tbody>
-            </table>
+        <!-- TABLA DE EXPEDIENTES -->
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
+                            <th class="p-3.5">Código</th>
+                            <th class="p-3.5">Título de la Obra</th>
+                            <th class="p-3.5">Área SENADI</th>
+                            <th class="p-3.5">Autor Principal</th>
+                            <th class="p-3.5">Estado</th>
+                            <th class="p-3.5">Etapa</th>
+                            <th class="p-3.5 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaExpedientesBody" class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td colspan="7" class="p-6 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-notch fa-spin text-lg mr-2"></i> Cargando expedientes...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
-    <!-- MODAL DE CONTRASEÑA PARA BORRAR -->
-    <div id="modalPassword" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden">
-            <div class="bg-red-700 text-white p-4 font-bold text-sm flex justify-between">
-                <span><i class="fa-solid fa-shield-halved"></i> Verificación de Seguridad</span>
-                <button onclick="cerrarModalPassword()" class="hover:text-red-200">&times;</button>
-            </div>
-            <div class="p-5">
-                <p class="text-xs text-slate-600 mb-4 font-medium">Esta acción es irreversible. Ingrese su contraseña de administrador para confirmar la eliminación.</p>
-                <input type="password" id="confirmPassword" placeholder="Su contraseña" class="w-full px-3 py-2 border rounded-lg text-sm mb-4 focus:ring-2 focus:ring-red-700">
-                <div id="errorPassword" class="text-red-600 text-xs font-bold mb-4 hidden">Contraseña incorrecta.</div>
-                <div class="flex justify-end gap-2">
-                    <button onclick="cerrarModalPassword()" class="px-4 py-2 bg-slate-100 text-slate-600 rounded-lg text-xs font-bold">Cancelar</button>
-                    <button onclick="ejecutarEliminacion()" id="btnConfirmDelete" class="px-4 py-2 bg-red-700 text-white rounded-lg text-xs font-bold">Eliminar Definitivamente</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- SCRIPT DE CONTROL -->
     <script>
-        let currentUser = null, currentProfile = null, expToDelete = null;
+        let expedientesGlobal = [];
+        let usuarioActual = null;
 
-        async function cerrarSesion() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
-        
-        function abrirModalPassword(id) { expToDelete = id; document.getElementById('confirmPassword').value = ''; document.getElementById('errorPassword').classList.add('hidden'); document.getElementById('modalPassword').classList.remove('hidden'); }
-        function cerrarModalPassword() { expToDelete = null; document.getElementById('modalPassword').classList.add('hidden'); }
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data: { session }, error: sessionError } = await supabaseClient.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
 
-        async function init() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return window.location.href = 'index.html';
-            currentUser = session.user;
+                const { data: profile, error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
 
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
-            if (!profile || profile.rol === 'solicitante') return window.location.href = 'mis_tramites.html';
-            currentProfile = profile;
+                if (profileError || !profile) throw new Error('No se encontró el perfil de usuario.');
 
-            document.getElementById('userName').innerText = profile.nombre_completo;
-            document.getElementById('userRole').innerText = profile.rol;
-            document.getElementById('userInitials').innerText = profile.nombre_completo.substring(0, 2).toUpperCase();
+                usuarioActual = profile;
+                document.getElementById('userNombre').innerText = profile.nombre_completo;
+                document.getElementById('userRolBadge').innerText = profile.rol.toUpperCase();
 
-            // Solo Admins y Superusuarios ven la gestión de usuarios
-            if (profile.rol === 'superusuario' || profile.rol === 'administrador') {
-                document.getElementById('linkUsuarios').classList.remove('hidden');
+                // Validar permisos estrictos de acceso
+                if (profile.rol === 'solicitante') {
+                    window.location.href = 'mis_tramites.html';
+                    return;
+                }
+
+                // Si es superusuario o administrador, mostrar enlace de gestión de usuarios
+                if (profile.rol === 'superusuario' || profile.rol === 'administrador') {
+                    document.getElementById('navUsuarios').classList.remove('hidden');
+                }
+
+                await cargarExpedientes();
+
+            } catch (err) {
+                alert('Error de acceso: ' + err.message);
+                window.location.href = 'index.html';
             }
-
-            cargarExpedientes();
-        }
+        });
 
         async function cargarExpedientes() {
-            const tbody = document.getElementById('tablaExpedientes');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 font-semibold"><i class="fa-solid fa-spinner fa-spin"></i> Cargando expedientes...</td></tr>';
-            
-            const { data: expedientes, error } = await supabaseClient.from('expedientes').select('*, profiles(nombre_completo)').order('created_at', { ascending: false });
-            
-            if (error || !expedientes || expedientes.length === 0) {
-                return tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 font-semibold">No hay trámites registrados en el sistema.</td></tr>`;
-            }
+            const { data, error } = await supabaseClient
+                .from('expedientes')
+                .select('*, profiles(nombre_completo, email)')
+                .order('created_at', { ascending: false });
 
-            tbody.innerHTML = expedientes.map(e => {
-                let badge = "bg-blue-50 text-blue-700 border-blue-200";
-                if(e.estado_general === 'requiere_correccion') badge = "bg-amber-50 text-amber-700 border-amber-200";
-                if(e.estado_general === 'cerrado') badge = "bg-emerald-50 text-emerald-700 border-emerald-200";
-
-                // El asistente no ve el botón de eliminar
-                let btnEliminar = (currentProfile.rol !== 'asistente') 
-                    ? `<button onclick="abrirModalPassword('${e.id}')" title="Eliminar Trámite" class="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-lg transition"><i class="fa-solid fa-trash-can"></i></button>` 
-                    : '';
-
-                return `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-4"><span class="block font-mono font-bold text-slate-800">${e.codigo_expediente}</span><span class="text-xs text-slate-400">${new Date(e.created_at).toLocaleDateString()}</span></td>
-                    <td class="p-4"><span class="block font-bold text-slate-700">${e.titulo_obra}</span><span class="text-[10px] text-slate-500 uppercase">${e.area_pi} - ${e.tipo_especifico}</span></td>
-                    <td class="p-4 text-xs font-semibold text-slate-600">${e.profiles ? e.profiles.nombre_completo : e.autor_nombre}</td>
-                    <td class="p-4 text-center"><span class="px-2.5 py-1 text-[10px] uppercase font-bold rounded border ${badge}">${e.estado_general.replace('_', ' ')}</span></td>
-                    <td class="p-4 text-center flex justify-center gap-2">
-                        <button onclick="cambiarEstadoRapido('${e.id}', '${e.estado_general}')" title="Avanzar / Subsanar" class="text-blue-600 hover:text-blue-800 bg-blue-50 p-2 rounded-lg transition"><i class="fa-solid fa-list-check"></i></button>
-                        ${btnEliminar}
-                    </td>
-                </tr>`;
-            }).join('');
-        }
-
-        async function cambiarEstadoRapido(id, estadoActual) {
-            const accion = prompt(`GESTIÓN RÁPIDA DE ESTADO\n\nEstado actual: ${estadoActual.toUpperCase()}\n\nEscriba el número de la acción a realizar:\n1. Marcar En Revisión\n2. Solicitar Corrección (Subsanación)\n3. Marcar Finalizado/Cerrado`);
-            if(!accion) return;
-
-            let nuevoEstado = '';
-            if (accion === '1') nuevoEstado = 'en_revision';
-            else if (accion === '2') nuevoEstado = 'requiere_correccion';
-            else if (accion === '3') nuevoEstado = 'cerrado';
-            else return alert('Opción inválida');
-
-            const { error } = await supabaseClient.from('expedientes').update({ estado_general: nuevoEstado }).eq('id', id);
-            if (!error) {
-                // Registrar movimiento en el seguimiento
-                let obs = (nuevoEstado === 'requiere_correccion') ? prompt("Ingrese la observación/motivo de la corrección:") : "Cambio de estado general";
-                await supabaseClient.from('seguimiento_etapas').insert([{ expediente_id: id, estado: nuevoEstado, observaciones: obs, actualizado_por: currentUser.id }]);
-                cargarExpedientes();
-            } else {
-                alert('Error al cambiar el estado: ' + error.message);
-            }
-        }
-
-        async function ejecutarEliminacion() {
-            const pass = document.getElementById('confirmPassword').value;
-            const btn = document.getElementById('btnConfirmDelete');
-            const err = document.getElementById('errorPassword');
-            
-            if(!pass) { err.innerText = 'Ingrese la contraseña.'; err.classList.remove('hidden'); return; }
-            
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>'; btn.disabled = true;
-
-            // Verificamos credenciales del admin simulando un login
-            const { error: authError } = await supabaseClient.auth.signInWithPassword({ email: currentUser.email, password: pass });
-            
-            if (authError) {
-                err.innerText = 'Contraseña de administrador incorrecta.'; err.classList.remove('hidden');
-                btn.innerHTML = 'Eliminar Definitivamente'; btn.disabled = false;
+            if (error) {
+                alert('Error al cargar expedientes: ' + error.message);
                 return;
             }
 
-            // Si es correcta, procedemos a borrar
-            const { error: deleteError } = await supabaseClient.from('expedientes').delete().eq('id', expToDelete);
-            
-            if(deleteError) alert('Error al eliminar: ' + deleteError.message);
-            else { alert('Expediente eliminado correctamente.'); cargarExpedientes(); cerrarModalPassword(); }
-            
-            btn.innerHTML = 'Eliminar Definitivamente'; btn.disabled = false;
+            expedientesGlobal = data || [];
+            renderizarTabla(expedientesGlobal);
         }
 
-        document.addEventListener('DOMContentLoaded', init);
+        function renderizarTabla(lista) {
+            const tbody = document.getElementById('tablaExpedientesBody');
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">No se encontraron expedientes registrados.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = lista.map(exp => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3.5 font-bold text-slate-800">${exp.codigo_expediente}</td>
+                    <td class="p-3.5 font-medium text-slate-800 max-w-xs truncate" title="${exp.titulo_obra}">${exp.titulo_obra}</td>
+                    <td class="p-3.5">${exp.area_pi}</td>
+                    <td class="p-3.5">${exp.autor_nombre}</td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase 
+                            ${exp.estado_general === 'en_revision' ? 'bg-amber-100 text-amber-800' : 
+                              exp.estado_general === 'requiere_correccion' ? 'bg-red-100 text-red-800' : 
+                              exp.estado_general === 'cerrado' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-200 text-slate-700'}">
+                            ${exp.estado_general.replace('_', ' ')}
+                        </span>
+                    </td>
+                    <td class="p-3.5 font-semibold">Etapa ${exp.etapa_actual}</td>
+                    <td class="p-3.5 text-right space-x-2">
+                        <a href="registro_expediente.html?id=${exp.id}" class="text-blue-600 hover:text-blue-800 font-semibold" title="Gestionar / Ver"><i class="fa-solid fa-pen-to-square"></i></a>
+                        ${(usuarioActual.rol === 'superusuario' || usuarioActual.rol === 'administrador') ? `
+                            <button onclick="eliminarExpediente('${exp.id}', '${exp.codigo_expediente}')" class="text-red-600 hover:text-red-800 font-semibold" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        ` : ''}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filtros en tiempo real
+        document.getElementById('inputBuscar').addEventListener('input', aplicarFiltros);
+        document.getElementById('filtroEstado').addEventListener('change', aplicarFiltros);
+
+        function aplicarFiltros() {
+            const texto = document.getElementById('inputBuscar').value.toLowerCase();
+            const estado = document.getElementById('filtroEstado').value;
+
+            const filtrados = expedientesGlobal.filter(exp => {
+                const matchTexto = exp.titulo_obra.toLowerCase().includes(texto) || 
+                                   exp.autor_nombre.toLowerCase().includes(texto) || 
+                                   exp.codigo_expediente.toLowerCase().includes(texto);
+                const matchEstado = estado === '' || exp.estado_general === estado;
+                return matchTexto && matchEstado;
+            });
+
+            renderizarTabla(filtrados);
+        }
+
+        async function eliminarExpediente(id, codigo) {
+            if (!confirm(`¿Está seguro de eliminar el expediente ${codigo}? Esta acción es irreversible.`)) return;
+
+            const passwordConfirm = prompt("Por seguridad, ingrese su contraseña de administrador para confirmar la eliminación:");
+            if (!passwordConfirm) return;
+
+            const { error: authError } = await supabaseClient.auth.signInWithPassword({
+                email: usuarioActual.email,
+                password: passwordConfirm
+            });
+
+            if (authError) {
+                alert("Contraseña incorrecta. Operación cancelada.");
+                return;
+            }
+
+            const { error } = await supabaseClient.from('expedientes').delete().eq('id', id);
+            if (error) {
+                alert("Error al eliminar: " + error.message);
+                return;
+            }
+
+            alert("Expediente eliminado con éxito.");
+            await cargarExpedientes();
+        }
+
+        async function cerrarSesion() {
+            await supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
     </script>
 </body>
 </html>
