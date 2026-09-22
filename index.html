@@ -4,49 +4,32 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Acceso - Sistema CATI USGP</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Supabase JS CDN Oficial -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Cliente Centralizado Supabase -->
     <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Navegación Superior Institucional con Efectos Visuales -->
     <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3">
-                
-                <!-- LADO IZQUIERDO: Logo Emprendimiento -->
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300">
-                    <img src="logo-emprendimiento.jpg" 
-                         alt="Departamento de Emprendimiento USGP" 
-                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                    <img src="logo-emprendimiento.jpg" alt="Departamento de Emprendimiento USGP" class="h-11 w-auto object-contain">
                 </div>
-
-                <!-- CENTRO: Identificador de la Plataforma -->
                 <div class="text-center hidden sm:block">
                     <span class="block text-sm font-bold tracking-wide uppercase text-white">Gestión de Propiedad Intelectual</span>
                     <span class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</span>
                 </div>
-
-                <!-- LADO DERECHO: Logo CATI USGP 2026 -->
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300">
-                    <img src="logo-CATI-2026-new.jpg" 
-                         alt="Centro de Apoyo a las Tecnologías e Innovación USGP" 
-                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                    <img src="logo-CATI-2026-new.jpg" alt="CATI USGP" class="h-11 w-auto object-contain">
                 </div>
-
             </div>
         </div>
     </nav>
 
-    <!-- Formulario de Acceso Real -->
     <main class="flex-grow flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-            
             <div class="bg-red-900/5 p-6 border-b border-slate-100 text-center">
                 <div class="w-12 h-12 bg-red-100 text-red-800 rounded-full flex items-center justify-center mx-auto mb-3 text-xl shadow-inner">
                     <i class="fa-solid fa-lock"></i>
@@ -56,7 +39,6 @@
             </div>
 
             <form id="formLogin" class="p-6 space-y-4">
-                
                 <div id="errorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg font-semibold text-xs text-center">
                     <span id="errorTexto"></span>
                 </div>
@@ -64,9 +46,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Correo Institucional</label>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                            <i class="fa-solid fa-envelope"></i>
-                        </span>
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-envelope"></i></span>
                         <input type="email" id="inputEmail" required placeholder="usuario@sangregorio.edu.ec" 
                                class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
                     </div>
@@ -80,9 +60,7 @@
                         </button>
                     </div>
                     <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                            <i class="fa-solid fa-key"></i>
-                        </span>
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400"><i class="fa-solid fa-key"></i></span>
                         <input type="password" id="inputPassword" required placeholder="••••••••" 
                                class="w-full pl-10 pr-4 py-2.5 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 focus:border-red-700 transition">
                     </div>
@@ -93,14 +71,10 @@
                     Ingresar a la Plataforma
                 </button>
             </form>
-
-            <div class="p-4 bg-slate-50 border-t border-slate-100 text-center text-xs text-slate-500">
-                ¿No tienes una cuenta? <a href="#" class="font-bold text-red-700 hover:underline">Regístrate aquí</a>
-            </div>
         </div>
     </main>
 
-    <!-- VENTANA MODAL: COMUNICACIÓN CON EL CATI -->
+    <!-- MODAL CATI -->
     <div id="modalCati" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
             <div class="bg-red-800 text-white p-4 flex justify-between items-center">
@@ -112,7 +86,7 @@
             <div class="p-6 space-y-4 text-xs text-slate-700 leading-relaxed">
                 <p class="font-semibold text-slate-800">
                     Para restablecer su contraseña o gestionar sus credenciales de acceso, debe comunicarse directamente con el 
-                    <span class="text-red-700 font-bold">CATI (Centro de Apoyo a las Tecnologías e Innovación)</span> de la Universidad San Gregorio de Portoviejo (USGP).
+                    <span class="text-red-700 font-bold">CATI (Centro de Apoyo a las Tecnologías y la Innovación)</span> de la Universidad San Gregorio de Portoviejo (USGP).
                 </p>
                 <div class="p-3 bg-red-50 border border-red-200 rounded-xl text-slate-600">
                     <p class="font-medium mb-1"><i class="fa-solid fa-envelope text-red-700 mr-1"></i> Correo institucional:</p>
@@ -129,28 +103,19 @@
         </div>
     </div>
 
-    <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
-            <div>
-                © 2026 <strong>CATI USGP</strong> - Centro de Apoyo a las Tecnologías y la Innovación. Universidad San Gregorio de Portoviejo.
-            </div>
+            <div>© 2026 <strong>CATI USGP</strong> - Universidad San Gregorio de Portoviejo.</div>
             <div class="flex items-center gap-2 font-medium">
                 <span>Desarrollado por</span>
-                <div class="inline-block transition-transform duration-300 transform hover:scale-110 cursor-pointer">
-                    <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-6 w-auto object-contain drop-shadow-sm">
-                </div>
+                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-6 w-auto object-contain drop-shadow-sm">
             </div>
         </div>
     </footer>
 
     <script>
-        function abrirModalCati() {
-            document.getElementById('modalCati').classList.remove('hidden');
-        }
-        function cerrarModalCati() {
-            document.getElementById('modalCati').classList.add('hidden');
-        }
+        function abrirModalCati() { document.getElementById('modalCati').classList.remove('hidden'); }
+        function cerrarModalCati() { document.getElementById('modalCati').classList.add('hidden'); }
 
         document.getElementById('formLogin').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -165,22 +130,13 @@
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Verificando acceso...';
 
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({
-                    email,
-                    password
-                });
-
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
                 if (error) throw error;
 
-                // Consultar rol en la tabla profiles
                 const { data: profile, error: profileError } = await supabaseClient
-                    .from('profiles')
-                    .select('rol')
-                    .eq('id', data.user.id)
-                    .single();
+                    .from('profiles').select('rol').eq('id', data.user.id).single();
 
                 if (profileError) throw profileError;
-
                 const rol = profile ? profile.rol : 'solicitante';
 
                 if (rol === 'solicitante') {
@@ -189,10 +145,7 @@
                     window.location.href = 'admin_dashboard.html';
                 }
             } catch (err) {
-                console.error('Error en inicio de sesión:', err);
-                errTexto.innerText = err.message.includes('Invalid login credentials') 
-                    ? 'Correo o contraseña incorrectos.' 
-                    : err.message;
+                errTexto.innerText = err.message.includes('Invalid login credentials') ? 'Correo o contraseña incorrectos.' : err.message;
                 errContainer.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = 'Ingresar a la Plataforma';
