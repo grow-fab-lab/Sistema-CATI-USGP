@@ -25,9 +25,6 @@
                     </div>
                     <a href="index.html" onclick="supabaseClient.auth.signOut()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
-                    <img src="logo-CATI-2026-new.jpg" alt="CATI USGP" class="h-11 w-auto object-contain">
-                </div>
             </div>
         </div>
     </nav>
@@ -83,7 +80,7 @@
     </main>
 
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-xs text-slate-500 text-center">© 2026 <strong>CATI USGP</strong> - Universidad San Gregorio de Portoviejo.</div>
+        <div class="max-w-7xl mx-auto px-4 text-xs text-slate-500 text-center">© 2026 <strong>CATI USGP</strong></div>
     </footer>
 
     <script>
@@ -93,9 +90,22 @@
 
             const user = session.user;
             const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            
             if (profile) {
-                document.getElementById('userName').innerText = profile.nombre_completo;
-                document.getElementById('userInitials').innerText = profile.nombre_completo.substring(0, 2).toUpperCase();
+                // Función para forzar mayúsculas en Nombres y Apellidos
+                const formatearNombre = (texto) => {
+                    return texto.toLowerCase().split(' ').map(palabra => palabra.charAt(0).toUpperCase() + palabra.slice(1)).join(' ');
+                };
+                
+                const nombreFormateado = formatearNombre(profile.nombre_completo);
+                document.getElementById('userName').innerText = nombreFormateado;
+                
+                const partesNombre = nombreFormateado.split(' ');
+                let iniciales = partesNombre[0].charAt(0).toUpperCase();
+                if (partesNombre.length > 1) iniciales += partesNombre[1].charAt(0).toUpperCase();
+                else iniciales = nombreFormateado.substring(0, 2).toUpperCase();
+                
+                document.getElementById('userInitials').innerText = iniciales;
             }
 
             const { data: expedientes } = await supabaseClient.from('expedientes').select('*').eq('usuario_id', user.id).order('created_at', { ascending: false });
