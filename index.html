@@ -151,38 +151,66 @@
             }
         }
 
-        // LÓGICA DE INICIO DE SESIÓN
+        // LÓGICA DE INICIO DE SESIÓN CORREGIDA Y BLINDADA
         document.getElementById('formLogin').addEventListener('submit', async (e) => {
-            e.preventDefault(); errContainer.classList.add('hidden');
+            e.preventDefault(); 
+            errContainer.classList.add('hidden');
             const btn = document.getElementById('btnLoginSubmit');
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Ingresando...'; btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Ingresando...'; 
+            btn.disabled = true;
+            
             try {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ 
+                // 1. Intentar el Login real
+                const { data: authData, error: authError } = await supabaseClient.auth.signInWithPassword({ 
                     email: document.getElementById('loginEmail').value.trim(), 
                     password: document.getElementById('loginPassword').value 
                 });
-                if (error) throw error;
-                const { data: profile } = await supabaseClient.from('profiles').select('rol').eq('id', data.user.id).single();
-                window.location.href = (profile && profile.rol !== 'solicitante') ? 'admin_dashboard.html' : 'mis_tramites.html';
+                
+                if (authError) {
+                    throw new Error('Credenciales inválidas. Verifica tu correo y contraseña.');
+                }
+
+                // 2. Buscar el Rol (Usamos maybeSingle para que no colapse la app si el perfil no existe por algún motivo)
+                const { data: profile, error: profileError } = await supabaseClient.from('profiles')
+                    .select('rol')
+                    .eq('id', authData.user.id)
+                    .maybeSingle();
+
+                if (profileError) throw profileError;
+
+                // 3. Asignar ruta basada en el rol (Asume 'solicitante' como medida de seguridad si profile es null)
+                let rol = profile ? profile.rol : 'solicitante';
+                window.location.href = (rol !== 'solicitante') ? 'admin_dashboard.html' : 'mis_tramites.html';
+
             } catch (err) {
-                errTexto.innerText = 'Correo o contraseña incorrectos.'; errContainer.classList.remove('hidden');
-                btn.disabled = false; btn.innerHTML = 'Ingresar a la Plataforma';
+                // 4. Muestra el error exacto
+                errTexto.innerText = err.message; 
+                errContainer.classList.remove('hidden');
+            } finally {
+                btn.disabled = false; 
+                btn.innerHTML = 'Ingresar a la Plataforma';
             }
         });
 
         // LÓGICA DE REGISTRO DE USUARIO SOLICITANTE
         document.getElementById('formRegistro').addEventListener('submit', async (e) => {
-            e.preventDefault(); errContainer.classList.add('hidden'); successContainer.classList.add('hidden');
+            e.preventDefault(); 
+            errContainer.classList.add('hidden'); 
+            successContainer.classList.add('hidden');
+            
             const email = document.getElementById('regEmail').value.trim().toLowerCase();
             const btn = document.getElementById('btnRegSubmit');
             
             if (!email.endsWith('@sangregorio.edu.ec')) {
-                errTexto.innerText = "Solo se permiten correos @sangregorio.edu.ec."; errContainer.classList.remove('hidden'); return;
+                errTexto.innerText = "Solo se permiten correos @sangregorio.edu.ec."; 
+                errContainer.classList.remove('hidden'); 
+                return;
             }
-            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registrando...'; btn.disabled = true;
+            
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Registrando...'; 
+            btn.disabled = true;
             
             try {
-                // Al registrar, enviamos los datos extra (metadata) para que el Trigger de DB los procese.
                 const { data, error } = await supabaseClient.auth.signUp({ 
                     email, 
                     password: document.getElementById('regPassword').value,
@@ -201,9 +229,11 @@
                 document.getElementById('formRegistro').reset(); 
                 setTimeout(() => cambiarTab('login'), 3000);
             } catch (err) {
-                errTexto.innerText = err.message; errContainer.classList.remove('hidden');
+                errTexto.innerText = err.message; 
+                errContainer.classList.remove('hidden');
             } finally {
-                btn.disabled = false; btn.innerHTML = 'Registrarme como Solicitante';
+                btn.disabled = false; 
+                btn.innerHTML = 'Registrarme como Solicitante';
             }
         });
     </script>
