@@ -90,7 +90,7 @@
                 <div id="contenedorAutores" class="space-y-4">
                     <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative">
                         <span class="inline-block bg-red-800 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-3">Autor Principal</span>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label>
                                 <input type="text" id="autorNombre" required placeholder="Nombre completo" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
@@ -102,6 +102,10 @@
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label>
                                 <input type="text" id="autorTelefono" required placeholder="09XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Dirección de Domicilio *</label>
+                                <input type="text" id="autorDireccion" required placeholder="Ciudad, calle, referencia..." class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
                             </div>
                         </div>
                         <div class="mt-3 pt-3 border-t border-slate-200">
@@ -182,10 +186,11 @@
                     <span class="inline-block bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Coautor #${contadorCoautores - 1}</span>
                     <button type="button" onclick="document.getElementById('${div.id}').remove()" class="text-red-600 hover:text-red-800 text-xs font-semibold"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres *</label><input type="text" required class="coautor-nombre w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                     <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label><input type="text" required class="coautor-cedula w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                     <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label><input type="text" required class="coautor-telefono w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
+                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Dirección *</label><input type="text" required class="coautor-direccion w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                 </div>
                 <div class="mt-3 pt-3 border-t border-slate-200">
                     <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula (PDF/JPG) *</label>
@@ -217,10 +222,12 @@
                 const autorCedula = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${autorCedula.slice(-3)}`;
                 
+                // 1. Subir archivos principales
                 const urlCedulaPrincipal = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
+                // 2. Insertar Expediente en Base de Datos (Ahora con Dirección)
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod,
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
@@ -229,6 +236,7 @@
                     autor_nombre: document.getElementById('autorNombre').value.trim(),
                     autor_cedula: autorCedula,
                     autor_telefono: document.getElementById('autorTelefono').value.trim(),
+                    autor_direccion: document.getElementById('autorDireccion').value.trim(),
                     archivo_cedula_url: urlCedulaPrincipal,
                     archivo_obra_url: urlObra,
                     contrato_url: urlContrato,
@@ -237,6 +245,7 @@
 
                 if (expError) throw expError;
 
+                // 3. Procesar e Insertar Coautores (Ahora con Dirección)
                 const coautoresItems = document.querySelectorAll('.coautor-item');
                 for (let item of coautoresItems) {
                     const fileInput = item.querySelector('.coautor-file');
@@ -247,6 +256,7 @@
                         nombre_completo: item.querySelector('.coautor-nombre').value.trim(),
                         cedula: item.querySelector('.coautor-cedula').value.trim(),
                         telefono: item.querySelector('.coautor-telefono').value.trim(),
+                        direccion: item.querySelector('.coautor-direccion').value.trim(),
                         archivo_cedula_url: urlCedulaCoautor
                     }]);
                 }
