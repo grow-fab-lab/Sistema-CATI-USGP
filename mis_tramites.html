@@ -4,280 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mis Trámites - Portal Solicitante CATI USGP</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Supabase JS CDN Oficial -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Cliente Centralizado Supabase -->
     <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Navegación Superior Institucional con Logos Interactivos -->
     <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3">
-                
-                <!-- LADO IZQUIERDO: Logo Emprendimiento -->
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300 cursor-pointer">
-                    <img src="logo-emprendimiento.jpg" 
-                         alt="Departamento de Emprendimiento USGP" 
-                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                    <img src="logo-emprendimiento.jpg" alt="Emprendimiento USGP" class="h-11 w-auto object-contain">
                 </div>
-
-                <!-- CENTRO: Perfil del Usuario Solicitante (Dinámico) -->
-                <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner backdrop-blur-sm">
-                    <div id="userInitials" class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">
-                        --
-                    </div>
+                <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner">
+                    <div id="userInitials" class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs shadow-md">--</div>
                     <div class="text-left text-xs hidden sm:block">
                         <span id="userName" class="block font-semibold text-white leading-tight">Cargando...</span>
                         <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
                     </div>
-                    <a href="#" onclick="cerrarSesion()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </a>
+                    <a href="index.html" onclick="supabaseClient.auth.signOut()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
-
-                <!-- LADO DERECHO: Logo Nuevo CATI USGP -->
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all duration-300 ease-out transform hover:-translate-y-0.5 hover:scale-105 hover:shadow-xl hover:border-red-300 cursor-pointer">
-                    <img src="logo-CATI-2026-new.jpg" 
-                         alt="Centro de Apoyo a las Tecnologías e Innovación USGP" 
-                         class="h-11 w-auto object-contain transition-all duration-300 group-hover:brightness-105">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                    <img src="logo-CATI-2026-new.jpg" alt="CATI USGP" class="h-11 w-auto object-contain">
                 </div>
-
             </div>
         </div>
     </nav>
 
-    <!-- Contenido Principal -->
     <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
-        
-        <!-- Encabezado de la Sección y Botón de Acción -->
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
             <div>
                 <h1 class="text-2xl font-bold text-slate-800">Mis Trámites y Expedientes</h1>
-                <p class="text-sm text-slate-500">Gestione y revise el estado de sus registros de obras y propiedad intelectual ante el CATI USGP.</p>
+                <p class="text-sm text-slate-500">Gestione y revise el estado de sus registros ante el CATI USGP.</p>
             </div>
-            
-            <a href="registro_expediente.html" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 flex items-center gap-2">
+            <a href="registro_expediente.html" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-lg font-medium text-sm shadow-md transition flex items-center gap-2">
                 <i class="fa-solid fa-plus"></i> Crear Nueva Solicitud
             </a>
         </div>
 
-        <!-- Tarjetas Resumen de Estado -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-all duration-200 hover:shadow-md">
-                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-folder-open"></i>
-                </div>
-                <div>
-                    <span id="statTotales" class="block text-2xl font-bold text-slate-800">0</span>
-                    <span class="text-xs text-slate-500 font-medium">Expedientes Totales</span>
-                </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-folder-open"></i></div>
+                <div><span id="statTotales" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">Totales</span></div>
             </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-all duration-200 hover:shadow-md">
-                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-spinner"></i>
-                </div>
-                <div>
-                    <span id="statProceso" class="block text-2xl font-bold text-slate-800">0</span>
-                    <span class="text-xs text-slate-500 font-medium">En Proceso (Seguimiento)</span>
-                </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-spinner"></i></div>
+                <div><span id="statProceso" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">En Proceso</span></div>
             </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4 transition-all duration-200 hover:shadow-md">
-                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl">
-                    <i class="fa-solid fa-circle-check"></i>
-                </div>
-                <div>
-                    <span id="statFinalizados" class="block text-2xl font-bold text-slate-800">0</span>
-                    <span class="text-xs text-slate-500 font-medium">Finalizados / Cerrados</span>
-                </div>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-circle-check"></i></div>
+                <div><span id="statFinalizados" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">Finalizados</span></div>
             </div>
         </div>
 
-        <!-- Tabla de Expedientes Creados por el Usuario -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
                 <h2 class="font-bold text-slate-700 text-sm">Historial de Solicitudes Registradas</h2>
-                <span id="textoContador" class="text-xs text-slate-500">Cargando expedientes...</span>
+                <span id="textoContador" class="text-xs text-slate-500">Cargando...</span>
             </div>
-
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse text-sm">
                     <thead>
-                        <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase tracking-wider">
+                        <tr class="bg-slate-100/70 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
                             <th class="p-4">N.º Expediente</th>
                             <th class="p-4">Título de la Obra</th>
-                            <th class="p-4">Área / Tipo (SENADI)</th>
-                            <th class="p-4">Fecha de Solicitud</th>
+                            <th class="p-4">Área / Tipo</th>
+                            <th class="p-4">Fecha</th>
                             <th class="p-4">Estado</th>
-                            <th class="p-4 text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaMisTramitesBody" class="divide-y divide-slate-100">
-                        <tr>
-                            <td colspan="6" class="p-8 text-center text-slate-400 text-xs">
-                                <i class="fa-solid fa-circle-notch fa-spin text-lg mb-2 text-red-700"></i>
-                                <p>Cargando sus trámites...</p>
-                            </td>
-                        </tr>
+                        <tr><td colspan="5" class="p-8 text-center text-slate-400 text-xs">Cargando trámites...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </main>
 
-    <!-- Pie de Página Institucional (Marca Grow) -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500">
-            <div>
-                © 2026 <strong>CATI USGP</strong> - Centro de Apoyo a las Tecnologías y la Innovación. Universidad San Gregorio de Portoviejo.
-            </div>
-            <div class="flex items-center gap-2 font-medium">
-                <span>Desarrollado por</span>
-                <div class="inline-block transition-transform duration-300 transform hover:scale-110 cursor-pointer">
-                    <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-6 w-auto object-contain drop-shadow-sm">
-                </div>
-            </div>
-        </div>
+        <div class="max-w-7xl mx-auto px-4 text-xs text-slate-500 text-center">© 2026 <strong>CATI USGP</strong> - Universidad San Gregorio de Portoviejo.</div>
     </footer>
 
-    <!-- Lógica de Sesión y Carga de Expedientes -->
     <script>
-        let usuarioActual = null;
-
         document.addEventListener('DOMContentLoaded', async () => {
-            if (typeof supabaseClient === 'undefined') {
-                alert('Error crítico: No se cargó la base de datos.');
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = 'index.html'; return; }
+
+            const user = session.user;
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+            if (profile) {
+                document.getElementById('userName').innerText = profile.nombre_completo;
+                document.getElementById('userInitials').innerText = profile.nombre_completo.substring(0, 2).toUpperCase();
+            }
+
+            const { data: expedientes } = await supabaseClient.from('expedientes').select('*').eq('usuario_id', user.id).order('created_at', { ascending: false });
+            const lista = expedientes || [];
+
+            document.getElementById('statTotales').innerText = lista.length;
+            document.getElementById('statProceso').innerText = lista.filter(e => e.estado_general !== 'cerrado').length;
+            document.getElementById('statFinalizados').innerText = lista.filter(e => e.estado_general === 'cerrado').length;
+            document.getElementById('textoContador').innerText = `Mostrando ${lista.length} expediente(s)`;
+
+            const tbody = document.getElementById('tablaMisTramitesBody');
+            if (lista.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 text-sm">Aún no ha registrado expedientes.</td></tr>`;
                 return;
             }
-            await verificarSesion();
-            if (usuarioActual) {
-                await cargarMisExpedientes();
-            }
+
+            tbody.innerHTML = '';
+            lista.forEach(exp => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition text-xs">
+                        <td class="p-4 font-mono font-bold text-red-700">${exp.codigo_expediente}</td>
+                        <td class="p-4 font-medium text-slate-800">${exp.titulo_obra}</td>
+                        <td class="p-4 text-slate-600"><span class="block font-semibold">${exp.area_pi}</span><span class="text-slate-400">${exp.tipo_obra}</span></td>
+                        <td class="p-4 text-slate-500">${new Date(exp.created_at).toLocaleDateString()}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 rounded-full font-semibold bg-amber-50 text-amber-700 border border-amber-200">Etapa ${exp.etapa_actual || 1}/10</span></td>
+                    </tr>
+                `;
+            });
         });
-
-        async function verificarSesion() {
-            try {
-                const { data: { session }, error } = await supabaseClient.auth.getSession();
-                
-                if (error || !session) {
-                    // Si no hay sesión activa, expulsar al login
-                    window.location.href = 'index.html';
-                    return;
-                }
-
-                usuarioActual = session.user;
-                
-                // Extraer el nombre o correo para el header
-                const email = usuarioActual.email;
-                const nombreMostrar = email.split('@')[0]; // Toma lo que está antes del @
-                
-                document.getElementById('userName').innerText = email;
-                document.getElementById('userInitials').innerText = nombreMostrar.substring(0, 2).toUpperCase();
-
-            } catch (error) {
-                console.error("Error al verificar sesión:", error);
-                window.location.href = 'index.html';
-            }
-        }
-
-        async function cargarMisExpedientes() {
-            const tbody = document.getElementById('tablaMisTramitesBody');
-            
-            try {
-                const { data: expedientes, error } = await supabaseClient
-                    .from('expedientes')
-                    .select('*')
-                    .eq('usuario_id', usuarioActual.id)
-                    .order('created_at', { ascending: false });
-
-                if (error) throw error;
-
-                // Actualizar métricas
-                const totales = expedientes.length;
-                const enProceso = expedientes.filter(e => e.estado_general !== 'cerrado').length;
-                const cerrados = expedientes.filter(e => e.estado_general === 'cerrado' || e.etapa_actual === 10).length;
-
-                document.getElementById('statTotales').innerText = totales;
-                document.getElementById('statProceso').innerText = enProceso;
-                document.getElementById('statFinalizados').innerText = cerrados;
-                document.getElementById('textoContador').innerText = `Mostrando ${totales} expediente(s)`;
-
-                // Pintar tabla
-                if (totales === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" class="p-10 text-center text-slate-500 text-sm">
-                                <i class="fa-regular fa-folder-open text-3xl mb-3 text-slate-300 block"></i>
-                                Aún no has registrado ninguna solicitud de expediente.<br>
-                                Haz clic en <strong>"Crear Nueva Solicitud"</strong> para empezar.
-                            </td>
-                        </tr>
-                    `;
-                    return;
-                }
-
-                let html = '';
-                expedientes.forEach(exp => {
-                    const fechaFormat = new Date(exp.created_at).toLocaleDateString('es-ES');
-                    
-                    let badgeEstado = '';
-                    if (exp.estado_general === 'cerrado' || exp.etapa_actual === 10) {
-                        badgeEstado = `
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Finalizado
-                            </span>
-                        `;
-                    } else {
-                        badgeEstado = `
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Etapa ${exp.etapa_actual || 1} / 10
-                            </span>
-                        `;
-                    }
-
-                    html += `
-                        <tr class="hover:bg-slate-50/80 transition">
-                            <td class="p-4 font-mono font-bold text-red-700">${exp.numero_expediente}</td>
-                            <td class="p-4 font-medium text-slate-800">${exp.titulo_obra}</td>
-                            <td class="p-4 text-xs text-slate-600">
-                                <span class="block font-semibold">${exp.area_pi}</span>
-                                <span class="text-slate-400">${exp.tipo_especifico}</span>
-                            </td>
-                            <td class="p-4 text-xs text-slate-500">${fechaFormat}</td>
-                            <td class="p-4">${badgeEstado}</td>
-                            <td class="p-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <button onclick="verEstado('${exp.numero_expediente}', ${exp.etapa_actual || 1})" title="Ver Avance del Proceso" class="px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition flex items-center gap-1">
-                                        <i class="fa-solid fa-eye text-slate-500"></i> Avance
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                });
-                tbody.innerHTML = html;
-
-            } catch (err) {
-                console.error("Error al cargar expedientes:", err);
-                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-red-600">Error al cargar expedientes: ${err.message}</td></tr>`;
-            }
-        }
-
-        function verEstado(cod, etapa) {
-            alert(`Expediente: ${cod}\n\nActualmente se encuentra en la Etapa Oficial N.º ${etapa} de 10.\nEl personal del CATI está gestionando su solicitud.`);
-        }
-
-        async function cerrarSesion() {
-            await supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
-        }
     </script>
 </body>
 </html>

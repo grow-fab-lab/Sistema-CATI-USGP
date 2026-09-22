@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Expediente - CATI USGP</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,11 +11,10 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Navegación Superior Institucional -->
     <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3">
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all transform hover:scale-105 cursor-pointer">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
                     <img src="logo-emprendimiento.jpg" alt="Emprendimiento USGP" class="h-11 w-auto object-contain">
                 </div>
                 <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full border border-red-700/80 shadow-inner">
@@ -25,18 +23,16 @@
                         <span class="block font-semibold text-white leading-tight" id="userName">Cargando...</span>
                         <span class="text-red-200 text-[10px]" id="userRole">Rol: Solicitante</span>
                     </div>
-                    <a href="index.html" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
+                    <a href="index.html" onclick="supabaseClient.auth.signOut()" title="Cerrar Sesión" class="text-red-200 hover:text-white transition ml-1 text-sm"><i class="fa-solid fa-right-from-bracket"></i></a>
                 </div>
-                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200 transition-all transform hover:scale-105 cursor-pointer">
+                <div class="group flex items-center bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
                     <img src="logo-CATI-2026-new.jpg" alt="CATI USGP" class="h-11 w-auto object-contain">
                 </div>
             </div>
         </div>
     </nav>
 
-    <!-- Contenido Principal -->
     <main class="max-w-4xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
-        
         <div class="mb-6 flex items-center justify-between">
             <div>
                 <a href="mis_tramites.html" id="btnVolver" class="inline-flex items-center gap-2 text-xs font-semibold text-red-700 hover:text-red-800 transition mb-2">
@@ -48,7 +44,6 @@
         </div>
 
         <form id="formExpediente" class="space-y-6">
-            
             <div id="errorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-xs font-semibold text-center">
                 <span id="errorTexto"></span>
             </div>
@@ -67,30 +62,20 @@
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Área SENADI *</label>
                         <select id="areaSenadi" required class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                            <option value="">-- Seleccionar --</option>
+                            <option value="">-- Seleccionar Área --</option>
                             <option value="Derecho de Autor">Derecho de Autor</option>
                             <option value="Propiedad Industrial">Propiedad Industrial</option>
                             <option value="Obtenciones Vegetales">Obtenciones Vegetales</option>
                         </select>
                     </div>
-                    
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Tipo / Género Específico *</label>
-                        <select id="tipoObra" required class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
-                            <option value="">-- Seleccionar --</option>
-                            <option value="Software / Programa de Ordenador">Software / Programa de Ordenador</option>
-                            <option value="Obra Literaria">Obra Literaria</option>
-                            <option value="Obra Artística / Musical">Obra Artística / Musical</option>
-                            <option value="Marca de Productos o Servicios">Marca de Productos o Servicios</option>
-                            <option value="Invento / Patente">Invento / Patente</option>
-                            <option value="Diseño Industrial">Diseño Industrial</option>
-                            <option value="Otro">Otro</option>
-                        </select>
+                        <input type="text" id="tipoObra" required placeholder="Ej. Software / Marca / Patente" class="w-full px-3.5 py-2 text-sm rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: AUTORES CON CÉDULAS INDIVIDUALES -->
+            <!-- SECCIÓN 2: AUTORES -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
                     <div class="flex items-center gap-3">
@@ -103,32 +88,31 @@
                 </div>
                 
                 <div id="contenedorAutores" class="space-y-4">
-                    <!-- Autor Principal -->
                     <div class="p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative">
                         <span class="inline-block bg-red-800 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase mb-3">Autor Principal</span>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label>
-                                <input type="text" id="autorNombre" required placeholder="Nombre del autor" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
+                                <input type="text" id="autorNombre" required placeholder="Nombre completo" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label>
-                                <input type="text" id="autorCedula" required placeholder="13XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
+                                <input type="text" id="autorCedula" required placeholder="13XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label>
-                                <input type="text" id="autorTelefono" required placeholder="09XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700 transition">
+                                <input type="text" id="autorTelefono" required placeholder="09XXXXXXXX" class="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300">
                             </div>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-slate-200/60">
+                        <div class="mt-3 pt-3 border-t border-slate-200">
                             <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Archivo de Cédula (PDF/JPG) *</label>
-                            <input type="file" id="fileCedulaPrincipal" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                            <input type="file" id="fileCedulaPrincipal" required accept=".pdf,.jpg,.jpeg,.png" class="block w-full text-xs text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-red-50 file:text-red-700">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: ARCHIVOS GENERALES (OBRA Y CONTRATO) -->
+            <!-- SECCIÓN 3: ARCHIVOS -->
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <div class="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
                     <div class="w-8 h-8 rounded-lg bg-red-100 text-red-800 flex items-center justify-center font-bold text-sm">3</div>
@@ -137,32 +121,26 @@
                 <div class="space-y-4 text-xs">
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">1. Obra Completa (ZIP/PDF/DOCX) *</label>
-                        <input type="file" id="fileObra" required accept=".pdf,.zip,.rar,.docx" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                        <input type="file" id="fileObra" required accept=".pdf,.zip,.rar,.docx" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:bg-red-50 file:text-red-700">
                     </div>
                     <div>
                         <label class="block font-semibold text-slate-700 mb-1">2. Contrato Firmado (PDF) *</label>
-                        <input type="file" id="fileContrato" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
+                        <input type="file" id="fileContrato" required accept=".pdf" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:bg-red-50 file:text-red-700">
                     </div>
                 </div>
             </div>
 
-            <!-- BOTONES -->
             <div class="flex justify-end gap-3 pt-2">
-                <a href="#" id="btnCancelar" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-50 transition">
-                    Cancelar
-                </a>
-                <button type="submit" id="btnSubmit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-md transition transform flex items-center gap-2">
+                <a href="#" id="btnCancelar" class="px-5 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-50">Cancelar</a>
+                <button type="submit" id="btnSubmit" class="bg-red-700 hover:bg-red-800 text-white px-6 py-2.5 rounded-lg font-medium text-sm shadow-md transition flex items-center gap-2">
                     <i class="fa-solid fa-paper-plane"></i> Guardar y Crear Expediente
                 </button>
             </div>
         </form>
     </main>
 
-    <!-- Pie de Página -->
     <footer class="bg-white border-t border-slate-200 py-4 mt-auto">
-        <div class="max-w-7xl mx-auto px-4 text-xs text-slate-500 text-center">
-            © 2026 <strong>CATI USGP</strong> - Universidad San Gregorio de Portoviejo.
-        </div>
+        <div class="max-w-7xl mx-auto px-4 text-xs text-slate-500 text-center">© 2026 <strong>CATI USGP</strong> - Universidad San Gregorio de Portoviejo.</div>
     </footer>
 
     <script>
@@ -180,24 +158,15 @@
                 document.getElementById('userName').innerText = profile.nombre_completo;
                 document.getElementById('userInitial').innerText = profile.nombre_completo.substring(0,2).toUpperCase();
                 currentRol = profile.rol;
-                
-                let roleText = 'Solicitante';
-                if (currentRol === 'super') roleText = 'SuperUsuario';
-                if (currentRol === 'admin') roleText = 'Administrador CATI';
-                if (currentRol === 'asistente') roleText = 'Asistente CATI';
-                document.getElementById('userRole').innerText = 'Rol: ' + roleText;
+                document.getElementById('userRole').innerText = 'Rol: ' + currentRol.toUpperCase();
 
-                // REGLA: Nombre en blanco si es Super, Admin o Asistente.
                 if (currentRol === 'solicitante') {
                     document.getElementById('autorNombre').value = profile.nombre_completo;
                 } else {
                     document.getElementById('autorNombre').value = '';
                 }
 
-                const rutaRetorno = (currentRol === 'admin' || currentRol === 'super' || currentRol === 'asistente') 
-                    ? 'admin_dashboard.html' 
-                    : 'mis_tramites.html';
-                
+                const rutaRetorno = (currentRol === 'admin' || currentRol === 'super' || currentRol === 'asistente') ? 'admin_dashboard.html' : 'mis_tramites.html';
                 document.getElementById('btnVolver').href = rutaRetorno;
                 document.getElementById('btnCancelar').href = rutaRetorno;
             }
@@ -205,29 +174,24 @@
 
         function agregarCoautor() {
             contadorCoautores++;
-            const contenedor = document.getElementById('contenedorAutores');
             const div = document.createElement('div');
             div.className = 'p-4 bg-slate-50/80 rounded-xl border border-slate-200 relative coautor-item mt-4';
             div.id = `coautor_${contadorCoautores}`;
-            
             div.innerHTML = `
                 <div class="flex justify-between items-center mb-3">
                     <span class="inline-block bg-slate-700 text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase">Coautor #${contadorCoautores - 1}</span>
-                    <button type="button" onclick="document.getElementById('${div.id}').remove()" class="text-red-600 hover:text-red-800 text-xs font-semibold flex items-center gap-1">
-                        <i class="fa-solid fa-trash-can"></i> Eliminar
-                    </button>
+                    <button type="button" onclick="document.getElementById('${div.id}').remove()" class="text-red-600 hover:text-red-800 text-xs font-semibold"><i class="fa-solid fa-trash-can"></i> Eliminar</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres Completos *</label><input type="text" required class="coautor-nombre w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
+                    <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nombres *</label><input type="text" required class="coautor-nombre w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                     <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula *</label><input type="text" required class="coautor-cedula w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                     <div><label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Teléfono *</label><input type="text" required class="coautor-telefono w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300"></div>
                 </div>
-                <div class="mt-3 pt-3 border-t border-slate-200/60">
-                    <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Archivo de Cédula (PDF/JPG) *</label>
-                    <input type="file" required accept=".pdf,.jpg,.jpeg,.png" class="coautor-file block w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition">
-                </div>
-            `;
-            contenedor.appendChild(div);
+                <div class="mt-3 pt-3 border-t border-slate-200">
+                    <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Cédula (PDF/JPG) *</label>
+                    <input type="file" required accept=".pdf,.jpg,.jpeg,.png" class="coautor-file block w-full text-xs text-slate-500 file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-red-50 file:text-red-700">
+                </div>`;
+            document.getElementById('contenedorAutores').appendChild(div);
         }
 
         async function subirArchivo(file, carpeta) {
@@ -242,8 +206,9 @@
         document.getElementById('formExpediente').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('btnSubmit');
+            const errContainer = document.getElementById('errorContainer');
             const errTexto = document.getElementById('errorTexto');
-            document.getElementById('errorContainer').classList.add('hidden');
+            errContainer.classList.add('hidden');
             
             btn.disabled = true;
             btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Subiendo archivos...';
@@ -252,12 +217,10 @@
                 const autorCedula = document.getElementById('autorCedula').value.trim();
                 const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}-${autorCedula.slice(-3)}`;
                 
-                // 1. Subir archivos
                 const urlCedulaPrincipal = await subirArchivo(document.getElementById('fileCedulaPrincipal').files[0], 'cedulas');
                 const urlObra = await subirArchivo(document.getElementById('fileObra').files[0], 'obras');
                 const urlContrato = await subirArchivo(document.getElementById('fileContrato').files[0], 'contratos');
 
-                // 2. Crear Expediente (CORRECCIÓN: area_pi en lugar de area_senadi)
                 const { data: expData, error: expError } = await supabaseClient.from('expedientes').insert([{
                     codigo_expediente: cod,
                     titulo_obra: document.getElementById('tituloObra').value.trim(),
@@ -274,7 +237,6 @@
 
                 if (expError) throw expError;
 
-                // 3. Crear Coautores
                 const coautoresItems = document.querySelectorAll('.coautor-item');
                 for (let item of coautoresItems) {
                     const fileInput = item.querySelector('.coautor-file');
@@ -295,7 +257,7 @@
             } catch (err) {
                 console.error(err);
                 errTexto.innerText = err.message;
-                document.getElementById('errorContainer').classList.remove('hidden');
+                errContainer.classList.remove('hidden');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Guardar y Crear Expediente';
             }
