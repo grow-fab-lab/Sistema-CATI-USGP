@@ -203,7 +203,7 @@
             }
         });
 
-        // Lógica de Registro Definitiva Mediante RPC (Evita restricciones de API Auth de Supabase)
+        // Lógica de Registro Nativa de Supabase
         document.getElementById('formRegistro').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             errContainer.classList.add('hidden'); 
@@ -218,19 +218,24 @@
             btn.disabled = true;
             
             try {
-                const { data, error } = await window.supabaseClient.rpc('registrar_solicitante', {
-                    p_email: email,
-                    p_password: password,
-                    p_nombre_completo: nombre_completo
+                const { data, error } = await window.supabaseClient.auth.signUp({ 
+                    email: email, 
+                    password: password,
+                    options: {
+                        data: {
+                            nombre_completo: nombre_completo,
+                            rol: 'solicitante'
+                        }
+                    }
                 });
                 
                 if (error) throw error;
-                if (data && data.success === false) throw new Error(data.error);
                 
                 successTexto.innerText = "¡Cuenta creada con éxito! Ya puedes iniciar sesión."; 
-                successContainer.classList.remove('hidden');
+                successContainer.classList.add('hidden'); // Ocultar si requiere confirmación o mostrar mensaje limpio
+                alert("¡Cuenta creada con éxito! Ya puedes iniciar sesión.");
                 document.getElementById('formRegistro').reset(); 
-                setTimeout(() => cambiarTab('login'), 3000);
+                cambiarTab('login');
             } catch (err) {
                 errTexto.innerText = "Error en el registro: " + err.message; 
                 errContainer.classList.remove('hidden');
