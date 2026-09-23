@@ -203,7 +203,7 @@
             }
         });
 
-        // Lógica de Registro Nativa de Supabase
+        // Lógica de Registro con gestión automática en perfiles
         document.getElementById('formRegistro').addEventListener('submit', async (e) => {
             e.preventDefault(); 
             errContainer.classList.add('hidden'); 
@@ -230,12 +230,21 @@
                 });
                 
                 if (error) throw error;
+
+                // Si la sesión se crea de inmediato o requiere inserción manual del perfil por seguridad
+                if (data.user) {
+                    await window.supabaseClient.from('profiles').upsert({
+                        id: data.user.id,
+                        email: email,
+                        nombre_completo: nombre_completo,
+                        rol: 'solicitante'
+                    });
+                }
                 
                 successTexto.innerText = "¡Cuenta creada con éxito! Ya puedes iniciar sesión."; 
-                successContainer.classList.add('hidden'); // Ocultar si requiere confirmación o mostrar mensaje limpio
-                alert("¡Cuenta creada con éxito! Ya puedes iniciar sesión.");
+                successContainer.classList.remove('hidden');
                 document.getElementById('formRegistro').reset(); 
-                cambiarTab('login');
+                setTimeout(() => cambiarTab('login'), 2500);
             } catch (err) {
                 errTexto.innerText = "Error en el registro: " + err.message; 
                 errContainer.classList.remove('hidden');
