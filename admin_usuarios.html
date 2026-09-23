@@ -11,11 +11,11 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- HEADER -->
+    <!-- HEADER INSTITUCIONAL -->
     <header class="bg-red-800 text-white shadow-lg border-b border-red-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
             <div class="flex items-center gap-3">
-                <div class="bg-white px-3 py-1 rounded-xl shadow-md">
+                <div class="bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
                     <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
                 </div>
                 <div>
@@ -29,7 +29,7 @@
         </div>
     </header>
 
-    <!-- NAVEGACIÓN -->
+    <!-- NAVEGACIÓN SECUNDARIA -->
     <nav class="bg-white shadow-sm border-b border-slate-200">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-2 py-2.5">
             <a href="admin_dashboard.html" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-2">
@@ -41,37 +41,47 @@
         </div>
     </nav>
 
-    <!-- CONTENIDO -->
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
         <div class="flex justify-between items-center mb-6">
             <div>
                 <h2 class="text-xl font-bold text-slate-800">Control de Accesos y Personal CATI</h2>
-                <p class="text-xs text-slate-500">Asigne roles de Administrador, Asistente o Solicitante de forma segura.</p>
+                <p class="text-xs text-slate-500">Asigne roles de Administrador, Asistente o Solicitante de forma segura[cite: 2, 9].</p>
             </div>
             <button onclick="abrirModalNuevoUsuario()" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center gap-2">
                 <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
             </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden">
-            <table class="w-full text-left border-collapse text-xs">
-                <thead>
-                    <tr class="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
-                        <th class="p-3.5">Nombre Completo</th>
-                        <th class="p-3.5">Correo Institucional</th>
-                        <th class="p-3.5">Rol Actual</th>
-                        <th class="p-3.5">Fecha de Registro</th>
-                        <th class="p-3.5 text-right">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaUsuariosBody" class="divide-y divide-slate-100 text-slate-600">
-                    <tr>
-                        <td colspan="5" class="p-6 text-center text-slate-400">
-                            <i class="fa-solid fa-circle-notch fa-spin text-lg mr-2"></i> Cargando usuarios...
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-8">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse text-xs">
+                    <thead>
+                        <tr class="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
+                            <th class="p-3.5">Nombre Completo</th>
+                            <th class="p-3.5">Correo Institucional</th>
+                            <th class="p-3.5">Rol Actual</th>
+                            <th class="p-3.5">Fecha de Registro</th>
+                            <th class="p-3.5 text-right">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaUsuariosBody" class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td colspan="5" class="p-6 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-notch fa-spin text-lg mr-2"></i> Cargando usuarios...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN INFERIOR: DESARROLLADO POR GROW -->
+        <div class="mt-8 flex flex-col items-center justify-center text-center space-y-1">
+            <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Desarrollado por</span>
+            <div class="bg-white px-4 py-1.5 rounded-xl shadow-sm border border-slate-200">
+                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-7 w-auto object-contain">
+            </div>
         </div>
     </main>
 
@@ -112,18 +122,21 @@
         </div>
     </div>
 
+    <!-- SCRIPT DE LÓGICA DE USUARIOS -->
     <script>
         let usuarioActual = null;
-        // Cliente secundario con persistencia desactivada para evitar cerrar la sesión del admin al crear usuarios
-        const authClon = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        // Cliente secundario con persistencia desactivada para evitar cerrar la sesión actual al crear usuarios
+        const SUPABASE_URL_VAL = "https://ldnqspgbnvqvprvdxaub.supabase.co";
+        const SUPABASE_ANON_KEY_VAL = "sb_publishable_h4gikz8ypO56Zc3r5umgvw_e8evug4g";
+        const authClon = supabase.createClient(SUPABASE_URL_VAL, SUPABASE_ANON_KEY_VAL, {
             auth: { persistSession: false, autoRefreshToken: false }
         });
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
             if (!session) { window.location.href = 'index.html'; return; }
 
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+            const { data: profile } = await window.supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
             usuarioActual = profile;
 
             if (!profile || (profile.rol !== 'superusuario' && profile.rol !== 'administrador')) {
@@ -136,7 +149,7 @@
         });
 
         async function cargarUsuarios() {
-            const { data, error } = await supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
+            const { data, error } = await window.supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
             if (error) { alert('Error al cargar usuarios: ' + error.message); return; }
 
             const tbody = document.getElementById('tablaUsuariosBody');
@@ -176,7 +189,6 @@
                 const nombre_completo = document.getElementById('nuevoNombre').value.trim();
                 const rol = document.getElementById('nuevoRol').value;
 
-                // Usamos el cliente clonado para no perder la sesión del superusuario actual
                 const { data, error } = await authClon.auth.signUp({
                     email,
                     password,
@@ -185,9 +197,8 @@
 
                 if (error) throw error;
 
-                // Forzar actualización inmediata del rol en profiles por seguridad
                 if (data.user) {
-                    await supabaseClient.from('profiles').update({ rol, nombre_completo }).eq('id', data.user.id);
+                    await window.supabaseClient.from('profiles').update({ rol, nombre_completo }).eq('id', data.user.id);
                 }
 
                 alert('Usuario creado con éxito.');
@@ -201,7 +212,7 @@
         }
 
         async function cambiarRol(userId, nuevoRol) {
-            const { error } = await supabaseClient.from('profiles').update({ rol: nuevoRol }).eq('id', userId);
+            const { error } = await window.supabaseClient.from('profiles').update({ rol: nuevoRol }).eq('id', userId);
             if (error) {
                 alert('Error al actualizar rol: ' + error.message);
                 await cargarUsuarios();
@@ -213,17 +224,17 @@
         async function eliminarUsuario(userId, email) {
             if (!confirm(`¿Está seguro de eliminar al usuario ${email}?`)) return;
 
-            const passwordConfirm = prompt("Ingrese su contraseña de superusuario para confirmar:");
+            const passwordConfirm = prompt("Ingrese su contraseña para confirmar la eliminación:");
             if (!passwordConfirm) return;
 
-            const { error: authError } = await supabaseClient.auth.signInWithPassword({
+            const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
                 email: usuarioActual.email,
                 password: passwordConfirm
             });
 
             if (authError) { alert("Contraseña incorrecta."); return; }
 
-            const { error } = await supabaseClient.from('profiles').delete().eq('id', userId);
+            const { error } = await window.supabaseClient.from('profiles').delete().eq('id', userId);
             if (error) { alert('Error al eliminar perfil: ' + error.message); return; }
 
             alert('Usuario eliminado.');
@@ -231,7 +242,7 @@
         }
 
         async function cerrarSesion() {
-            await supabaseClient.auth.signOut();
+            await window.supabaseClient.auth.signOut();
             window.location.href = 'index.html';
         }
     </script>

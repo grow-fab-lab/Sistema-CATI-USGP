@@ -3,94 +3,206 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Trámites - CATI USGP</title>
+    <title>Mis Trámites - Sistema CATI USGP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- HEADER INSTITUCIONAL -->
     <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-3">
-                <div class="bg-white px-3.5 py-1.5 rounded-xl"><img src="logo-emprendimiento.jpg" alt="Logo" class="h-11 w-auto"></div>
-                <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full">
-                    <div id="userInitials" class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs">--</div>
-                    <div class="text-left text-xs hidden sm:block">
-                        <span id="userName" class="block font-semibold text-white">Cargando...</span>
-                        <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
+                <div class="flex items-center gap-3">
+                    <div class="bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                        <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
                     </div>
-                    <button onclick="cerrarSesion()" class="text-red-200 hover:text-white ml-1"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <div>
+                        <h1 class="text-sm font-bold tracking-wide uppercase">Portal del Solicitante CATI</h1>
+                        <p class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-3 bg-red-900/60 px-4 py-1.5 rounded-full shadow-inner">
+                        <div id="userInitials" class="w-8 h-8 rounded-full bg-white text-red-800 flex items-center justify-center font-bold text-xs">--</div>
+                        <div class="text-left text-xs hidden sm:block">
+                            <span id="userName" class="block font-semibold text-white">Cargando...</span>
+                            <span class="text-red-200 text-[10px]">Rol: Solicitante</span>
+                        </div>
+                    </div>
+                    <button onclick="cerrarSesion()" class="bg-red-900 hover:bg-red-950 text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow">
+                        <i class="fa-solid fa-right-from-bracket"></i> Salir
+                    </button>
                 </div>
             </div>
         </div>
     </nav>
 
-    <main class="max-w-7xl mx-auto py-8 px-4 flex-grow w-full">
-        <div class="flex justify-between items-center mb-8">
+    <!-- CONTENIDO PRINCIPAL -->
+    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800">Mis Trámites</h1>
-                <p class="text-sm text-slate-500">Gestione sus registros ante el CATI.</p>
+                <h1 class="text-2xl font-bold text-slate-800">Mis Trámites de Propiedad Intelectual</h1>
+                <p class="text-sm text-slate-500">Gestione y dé seguimiento a sus solicitudes ante el CATI USGP[cite: 9].</p>
             </div>
-            <div class="flex flex-col items-end">
-                <button onclick="verificarLimiteYCrear()" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-lg text-sm flex items-center gap-2"><i class="fa-solid fa-plus"></i> Nueva Solicitud</button>
-                <span id="mensajeLimite" class="text-[10px] text-red-600 mt-1 hidden font-bold">Límite alcanzado: Máximo 3 trámites.</span>
+            <div class="flex flex-col items-end w-full sm:w-auto">
+                <button onclick="verificarLimiteYCrear()" class="bg-red-700 hover:bg-red-800 text-white px-5 py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Nueva Solicitud
+                </button>
+                <span id="mensajeLimite" class="text-[11px] text-red-600 mt-1.5 hidden font-bold bg-red-50 px-3 py-1 rounded-lg border border-red-200">
+                    <i class="fa-solid fa-triangle-exclamation mr-1"></i> Límite alcanzado: Máximo 3 trámites activos[cite: 9].
+                </span>
             </div>
         </div>
 
+        <!-- TARJETAS ESTADÍSTICAS -->
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="bg-white p-5 rounded-xl border flex items-center gap-4"><div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-folder-open"></i></div><div><span id="statTotales" class="block text-2xl font-bold">0</span><span class="text-xs text-slate-500">Totales</span></div></div>
-            <div class="bg-white p-5 rounded-xl border flex items-center gap-4"><div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-spinner"></i></div><div><span id="statProceso" class="block text-2xl font-bold">0</span><span class="text-xs text-slate-500">En Proceso</span></div></div>
-            <div class="bg-white p-5 rounded-xl border flex items-center gap-4"><div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-check"></i></div><div><span id="statFinalizados" class="block text-2xl font-bold">0</span><span class="text-xs text-slate-500">Finalizados</span></div></div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-folder-open"></i></div>
+                <div><span id="statTotales" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">Trámites Totales</span></div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-spinner"></i></div>
+                <div><span id="statProceso" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">En Proceso / Activos</span></div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
+                <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg"><i class="fa-solid fa-check"></i></div>
+                <div><span id="statFinalizados" class="block text-2xl font-bold text-slate-800">0</span><span class="text-xs text-slate-500 font-medium">Finalizados / Cerrados</span></div>
+            </div>
         </div>
 
-        <div class="bg-white rounded-xl border overflow-hidden">
-            <div class="p-4 bg-slate-50 border-b"><h2 class="font-bold text-sm text-slate-700">Historial</h2></div>
-            <table class="w-full text-left text-sm">
-                <thead><tr class="bg-slate-100/70 border-b text-xs text-slate-600 uppercase"><th class="p-4">Expediente</th><th class="p-4">Título</th><th class="p-4">Área</th><th class="p-4">Fecha</th><th class="p-4 text-center">Estado</th></tr></thead>
-                <tbody id="tablaMisTramitesBody"><tr class="border-b"><td colspan="5" class="p-8 text-center text-slate-400">Cargando...</td></tr></tbody>
-            </table>
+        <!-- TABLA DE HISTORIAL -->
+        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-8">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+                <h2 class="font-bold text-sm text-slate-700 uppercase tracking-wide">Historial de Expedientes</h2>
+                <span class="text-xs text-slate-500">Actualizado en tiempo real</span>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="bg-slate-50/70 border-b border-slate-200 text-slate-600 uppercase font-bold">
+                            <th class="p-4">Código</th>
+                            <th class="p-4">Título de la Obra</th>
+                            <th class="p-4">Área SENADI / Tipo</th>
+                            <th class="p-4">Fecha de Creación</th>
+                            <th class="p-4 text-center">Estado del Trámite</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tablaMisTramitesBody" class="divide-y divide-slate-100 text-slate-600">
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-slate-400">
+                                <i class="fa-solid fa-circle-notch fa-spin text-lg mr-2"></i> Cargando trámites...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECCIÓN INFERIOR: DESARROLLADO POR GROW -->
+        <div class="mt-8 flex flex-col items-center justify-center text-center space-y-1">
+            <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Desarrollado por</span>
+            <div class="bg-white px-4 py-1.5 rounded-xl shadow-sm border border-slate-200">
+                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-7 w-auto object-contain">
+            </div>
         </div>
     </main>
 
+    <!-- SCRIPT DE CONTROL -->
     <script>
         let tramitesEnProceso = 0;
-        async function cerrarSesion() { await supabaseClient.auth.signOut(); window.location.href = 'index.html'; }
+
+        async function cerrarSesion() {
+            await window.supabaseClient.auth.signOut();
+            window.location.href = 'index.html';
+        }
+
         function verificarLimiteYCrear() {
-            if (tramitesEnProceso >= 3) document.getElementById('mensajeLimite').classList.remove('hidden');
-            else window.location.href = 'registro_expediente.html';
+            if (tramitesEnProceso >= 3) {
+                document.getElementById('mensajeLimite').classList.remove('hidden');
+            } else {
+                window.location.href = 'registro_expediente.html';
+            }
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return window.location.href = 'index.html';
+            try {
+                const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
 
-            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
-            if (profile) {
-                const nombre = profile.nombre_completo.toLowerCase().split(' ').map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+                // Cargar perfil del usuario
+                const { data: profile, error: profileError } = await window.supabaseClient
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', session.user.id)
+                    .single();
+
+                if (profileError || !profile) throw new Error('No se encontró el perfil.');
+
+                // Si por error un administrador o superusuario entra aquí, redirigirlo a su panel
+                if (profile.rol !== 'solicitante') {
+                    window.location.href = 'admin_dashboard.html';
+                    return;
+                }
+
+                const nombre = profile.nombre_completo;
                 document.getElementById('userName').innerText = nombre;
-                const p = nombre.split(' '); document.getElementById('userInitials').innerText = p.length > 1 ? p[0][0] + p[1][0] : nombre.substring(0,2).toUpperCase();
+                const partes = nombre.trim().split(' ');
+                const iniciales = partes.length > 1 ? partes[0][0] + partes[1][0] : nombre.substring(0, 2);
+                document.getElementById('userInitials').innerText = iniciales.toUpperCase();
+
+                // Cargar expedientes del solicitante actual
+                const { data: expList, error: expError } = await window.supabaseClient
+                    .from('expedientes')
+                    .select('*')
+                    .eq('usuario_id', session.user.id)
+                    .order('created_at', { ascending: false });
+
+                if (expError) throw expError;
+
+                const lista = expList || [];
+                // Se consideran activos aquellos cuyo estado no sea cerrado ni archivado
+                tramitesEnProceso = lista.filter(e => e.estado_general !== 'cerrado' && e.estado_general !== 'archivado').length;
+                const finalizados = lista.length - tramitesEnProceso;
+
+                document.getElementById('statTotales').innerText = lista.length;
+                document.getElementById('statProceso').innerText = tramitesEnProceso;
+                document.getElementById('statFinalizados').innerText = finalizados;
+
+                const tbody = document.getElementById('tablaMisTramitesBody');
+                if (lista.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500 italic">No registra trámites activos en el sistema. Haga clic en "Nueva Solicitud" para comenzar[cite: 9].</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = lista.map(e => `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="p-4 font-bold text-red-700">${e.codigo_expediente}</td>
+                        <td class="p-4 font-medium text-slate-800 max-w-xs truncate" title="${e.titulo_obra}">${e.titulo_obra}</td>
+                        <td class="p-4">
+                            <span class="block font-semibold text-slate-700">${e.area_pi}</span>
+                            <span class="text-slate-400 text-[11px]">${e.tipo_especifico}</span>
+                        </td>
+                        <td class="p-4 text-slate-500">${new Date(e.created_at).toLocaleDateString()}</td>
+                        <td class="p-4 text-center">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase border
+                                ${e.estado_general === 'en_revision' ? 'bg-amber-50 text-amber-800 border-amber-200' :
+                                  e.estado_general === 'requiere_correccion' ? 'bg-red-50 text-red-800 border-red-200' :
+                                  e.estado_general === 'cerrado' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-slate-100 text-slate-700 border-slate-200'}">
+                                ${e.estado_general.replace('_', ' ')}
+                            </span>
+                        </td>
+                    </tr>
+                `).join('');
+
+            } catch (err) {
+                alert('Error al cargar la información: ' + err.message);
             }
-
-            const { data: exp } = await supabaseClient.from('expedientes').select('*').eq('usuario_id', session.user.id).order('created_at', { ascending: false });
-            const lista = exp || [];
-            tramitesEnProceso = lista.filter(e => !['cerrado', 'archivado'].includes(e.estado_general)).length;
-
-            document.getElementById('statTotales').innerText = lista.length;
-            document.getElementById('statProceso').innerText = tramitesEnProceso;
-            document.getElementById('statFinalizados').innerText = lista.length - tramitesEnProceso;
-
-            const tbody = document.getElementById('tablaMisTramitesBody');
-            if (lista.length === 0) return tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-500">Sin expedientes registrados.</td></tr>`;
-
-            tbody.innerHTML = lista.map(e => `
-                <tr class="border-b hover:bg-slate-50 text-xs">
-                    <td class="p-4 font-bold text-red-700">${e.codigo_expediente}</td>
-                    <td class="p-4 font-medium text-slate-800">${e.titulo_obra}</td>
-                    <td class="p-4"><span class="block font-semibold">${e.area_pi}</span><span class="text-slate-400">${e.tipo_especifico}</span></td>
-                    <td class="p-4 text-slate-500">${new Date(e.created_at).toLocaleDateString()}</td>
-                    <td class="p-4 text-center"><span class="px-2 py-1 rounded-full border bg-blue-50 text-blue-700 font-semibold">${e.estado_general.replace('_',' ').toUpperCase()}</span></td>
-                </tr>`).join('');
         });
     </script>
 </body>

@@ -3,134 +3,315 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Obra - CATI USGP</title>
+    <title>Registro de Expediente - Sistema CATI USGP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col font-sans">
+
+    <!-- HEADER INSTITUCIONAL -->
     <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
-        <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="bg-white px-3 py-1 rounded-xl"><img src="logo-emprendimiento.jpg" class="h-10"></div>
-            <a href="mis_tramites.html" class="text-sm font-bold text-white hover:text-red-200">Cancelar y Volver</a>
+        <div class="max-w-4xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
+                    <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
+                </div>
+                <div>
+                    <h1 class="text-sm font-bold tracking-wide uppercase">Nueva Solicitud CATI</h1>
+                    <p class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</p>
+                </div>
+            </div>
+            <a href="mis_tramites.html" class="text-xs font-bold text-white hover:text-red-200 bg-red-900 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
+                <i class="fa-solid fa-arrow-left"></i> Cancelar y Volver
+            </a>
         </div>
     </nav>
 
+    <!-- CONTENIDO PRINCIPAL -->
     <main class="max-w-4xl mx-auto py-8 px-4 flex-grow w-full">
-        <h1 class="text-2xl font-bold text-slate-800 mb-6">Solicitud de Registro</h1>
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-slate-800">Formulario de Registro de Propiedad Intelectual</h1>
+            <p class="text-xs text-slate-500">Complete los datos de la obra, autores y adjunte la documentación requerida.</p>
+        </div>
         
         <form id="formExpediente" class="space-y-6">
-            <div id="errorContainer" class="hidden bg-red-50 text-red-700 p-4 rounded-xl text-center text-sm font-bold"><span id="errorTexto"></span></div>
+            <div id="errorContainer" class="hidden bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl text-center text-xs font-bold">
+                <span id="errorTexto"></span>
+            </div>
 
-            <div class="bg-white rounded-2xl border p-6">
-                <h2 class="font-bold text-base mb-4 border-b pb-2">1. Obra</h2>
+            <!-- SECCIÓN 1: DATOS DE LA OBRA -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
+                <h2 class="font-bold text-sm text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-book text-red-700"></i> 1. Información de la Creación / Obra
+                </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2"><label class="block text-xs font-bold mb-1">Título *</label><input type="text" id="tituloObra" required class="w-full px-3 py-2 border rounded-lg"></div>
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Título de la Obra *</label>
+                        <input type="text" id="tituloObra" required placeholder="Ej. Sistema Informático Automatizado..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700">
+                    </div>
                     <div>
-                        <label class="block text-xs font-bold mb-1">Área SENADI *</label>
-                        <select id="areaSenadi" required class="w-full px-3 py-2 border rounded-lg">
-                            <option value="">-- Seleccionar --</option>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Área SENADI *</label>
+                        <select id="areaSenadi" required class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700">
+                            <option value="">-- Seleccionar Área --</option>
                             <option value="Derecho de Autor">Derecho de Autor</option>
                             <option value="Propiedad Industrial">Propiedad Industrial</option>
                             <option value="Obtenciones Vegetales">Obtenciones Vegetales</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs font-bold mb-1">Tipo Específico *</label>
-                        <select id="tipoObra" required disabled class="w-full px-3 py-2 border rounded-lg bg-slate-50"><option value="">-- Seleccione Área --</option></select>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tipo Específico *</label>
+                        <select id="tipoObra" required disabled class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg bg-slate-50 focus:ring-2 focus:ring-red-700">
+                            <option value="">-- Seleccione Área Primero --</option>
+                        </select>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border p-6">
-                <div class="flex justify-between border-b pb-2 mb-4"><h2 class="font-bold">2. Autores</h2><button type="button" onclick="addC()" class="text-xs text-red-700 font-bold border border-red-700 px-2 rounded">+ Coautor</button></div>
+            <!-- SECCIÓN 2: AUTORES -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <h2 class="font-bold text-sm text-slate-800 flex items-center gap-2">
+                        <i class="fa-solid fa-users text-red-700"></i> 2. Datos de Autores
+                    </h2>
+                    <button type="button" onclick="addCoautor()" class="text-xs text-red-700 font-bold border border-red-700 hover:bg-red-50 px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> Agregar Coautor
+                    </button>
+                </div>
                 <div id="autoresBox" class="space-y-4">
-                    <div class="p-4 bg-slate-50 rounded-xl border relative">
-                        <span class="bg-red-800 text-white text-[10px] px-2 py-1 rounded font-bold mb-2 inline-block">AUTOR PRINCIPAL</span>
-                        <div class="grid grid-cols-2 gap-3 mb-3">
-                            <div><label class="text-[11px] font-bold">Nombres *</label><input type="text" id="aNom" required class="w-full px-2 py-1 border rounded text-xs"></div>
-                            <div><label class="text-[11px] font-bold">Cédula *</label><input type="text" id="aCed" required class="w-full px-2 py-1 border rounded text-xs"></div>
-                            <div><label class="text-[11px] font-bold">Teléfono *</label><input type="text" id="aTel" required class="w-full px-2 py-1 border rounded text-xs"></div>
-                            <div><label class="text-[11px] font-bold">Dirección *</label><input type="text" id="aDir" required class="w-full px-2 py-1 border rounded text-xs"></div>
+                    <!-- Autor Principal -->
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 relative">
+                        <span class="bg-red-800 text-white text-[10px] px-2.5 py-1 rounded-md font-bold mb-3 inline-block shadow-sm">AUTOR PRINCIPAL</span>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-700 block mb-1">Nombres y Apellidos *</label>
+                                <input type="text" id="aNom" required class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-700 block mb-1">Cédula de Identidad *</label>
+                                <input type="text" id="aCed" required placeholder="1300000000" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-700 block mb-1">Teléfono / Celular *</label>
+                                <input type="text" id="aTel" required placeholder="0999999999" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                            </div>
+                            <div>
+                                <label class="text-[11px] font-bold text-slate-700 block mb-1">Dirección Domiciliaria *</label>
+                                <input type="text" id="aDir" required placeholder="Portoviejo, Manabí" class="w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                            </div>
                         </div>
-                        <label class="text-[11px] font-bold block mb-1">Cédula (PDF) *</label><input type="file" id="fCed" required accept=".pdf" class="w-full text-xs">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-700 block mb-1">Documento de Cédula (PDF) *</label>
+                            <input type="file" id="fCed" required accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border p-6">
-                <h2 class="font-bold border-b pb-2 mb-4">3. Archivos</h2>
-                <div class="space-y-3">
-                    <div><label class="text-[11px] font-bold block mb-1">Obra Completa (ZIP/PDF) *</label><input type="file" id="fObra" required accept=".pdf,.zip" class="text-xs"></div>
-                    <div><label class="text-[11px] font-bold block mb-1">Contrato (PDF) *</label><input type="file" id="fCont" required accept=".pdf" class="text-xs"></div>
+            <!-- SECCIÓN 3: ARCHIVOS Y DOCUMENTACIÓN -->
+            <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
+                <h2 class="font-bold text-sm text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
+                    <i class="fa-solid fa-file-arrow-up text-red-700"></i> 3. Documentación Requerida
+                </h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1">Archivo de la Obra Completa (PDF, ZIP o RAR) *</label>
+                        <input type="file" id="fObra" required accept=".pdf,.zip,.rar" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                        <p class="text-[10px] text-slate-500 mt-1">Formatos permitidos: .pdf, .zip, .rar</p>
+                    </div>
+                    <div>
+                        <label class="text-xs font-bold text-slate-700 block mb-1">Contrato o Acuerdo de Cesión/Participación (PDF) *</label>
+                        <input type="file" id="fCont" required accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                    </div>
                 </div>
             </div>
 
-            <div class="flex justify-end gap-3"><button type="submit" id="btnS" class="bg-red-700 text-white px-6 py-2 rounded-lg font-bold">Guardar Expediente</button></div>
+            <!-- BOTÓN DE ENVÍO -->
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="submit" id="btnSubmitExp" class="bg-red-700 hover:bg-red-800 text-white px-8 py-3 rounded-xl font-bold text-xs shadow-lg transition flex items-center gap-2">
+                    <i class="fa-solid fa-floppy-disk"></i> Guardar y Enviar Expediente
+                </button>
+            </div>
         </form>
+
+        <!-- SECCIÓN INFERIOR: DESARROLLADO POR GROW -->
+        <div class="mt-12 flex flex-col items-center justify-center text-center space-y-1">
+            <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Desarrollado por</span>
+            <div class="bg-white px-4 py-1.5 rounded-xl shadow-sm border border-slate-200">
+                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-7 w-auto object-contain">
+            </div>
+        </div>
     </main>
 
+    <!-- SCRIPT DE CONTROL -->
     <script>
-        let curU = null; let cId = 1;
-        const senadi = { "Derecho de Autor": ["Obras Literarias", "Obras Artísticas", "Software"], "Propiedad Industrial": ["Marca", "Patente"], "Obtenciones Vegetales": ["Variedad Vegetal"] };
+        let currentUser = null; 
+        let coautorCount = 0;
+        
+        const senadiOptions = { 
+            "Derecho de Autor": ["Obras Literarias", "Obras Artísticas", "Software / Programas de Ordenador", "Obras Audiovisuales", "Fonogramas"], 
+            "Propiedad Industrial": ["Marca Comercial", "Patente de Invención", "Modelo de Utilidad", "Diseño Industrial"], 
+            "Obtenciones Vegetales": ["Variedad Vegetal"] 
+        };
         
         document.getElementById('areaSenadi').addEventListener('change', function() {
-            const t = document.getElementById('tipoObra'); t.innerHTML = '<option value="">-- Seleccionar --</option>';
-            if(this.value && senadi[this.value]) { t.disabled = false; t.classList.remove('bg-slate-50'); senadi[this.value].forEach(op => t.innerHTML += `<option value="${op}">${op}</option>`); } 
-            else { t.disabled = true; t.classList.add('bg-slate-50'); }
+            const selectTipo = document.getElementById('tipoObra'); 
+            selectTipo.innerHTML = '<option value="">-- Seleccionar Tipo --</option>';
+            if(this.value && senadiOptions[this.value]) { 
+                selectTipo.disabled = false; 
+                selectTipo.classList.remove('bg-slate-50'); 
+                selectTipo.classList.add('bg-white');
+                senadiOptions[this.value].forEach(op => {
+                    selectTipo.innerHTML += `<option value="${op}">${op}</option>`;
+                }); 
+            } else { 
+                selectTipo.disabled = true; 
+                selectTipo.classList.add('bg-slate-50'); 
+                selectTipo.classList.remove('bg-white');
+            }
         });
 
-        async function init() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) return window.location.href = 'index.html';
-            curU = session.user;
-            const { data: p } = await supabaseClient.from('profiles').select('nombre_completo').eq('id', curU.id).single();
-            if(p) document.getElementById('aNom').value = p.nombre_completo;
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
+                if (sessionError || !session) {
+                    window.location.href = 'index.html';
+                    return;
+                }
+                currentUser = session.user;
+                
+                // Cargar nombre del usuario para rellenar el autor principal por defecto
+                const { data: profile } = await window.supabaseClient.from('profiles').select('nombre_completo').eq('id', currentUser.id).single();
+                if(profile) {
+                    document.getElementById('aNom').value = profile.nombre_completo;
+                }
+            } catch (err) {
+                console.error("Error al inicializar:", err.message);
+            }
+        });
+
+        function addCoautor() {
+            coautorCount++; 
+            const container = document.createElement('div'); 
+            container.className = 'coautor-item p-4 bg-slate-50 rounded-xl border border-slate-200 mt-4 relative';
+            container.innerHTML = `
+                <div class="flex justify-between items-center mb-3">
+                    <span class="bg-slate-700 text-white text-[10px] px-2.5 py-1 rounded-md font-bold">COAUTOR ${coautorCount}</span>
+                    <button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-600 hover:text-red-800 text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash"></i> Eliminar
+                    </button>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-700 block mb-1">Nombres y Apellidos *</label>
+                        <input type="text" placeholder="Nombres del coautor" required class="cNom w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-700 block mb-1">Cédula de Identidad *</label>
+                        <input type="text" placeholder="Cédula" required class="cCed w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-700 block mb-1">Teléfono / Celular *</label>
+                        <input type="text" placeholder="Teléfono" required class="cTel w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-700 block mb-1">Dirección Domiciliaria *</label>
+                        <input type="text" placeholder="Dirección" required class="cDir w-full px-2.5 py-1.5 border border-slate-300 rounded-lg text-xs bg-white focus:ring-2 focus:ring-red-700">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold text-slate-700 block mb-1">Documento de Cédula (PDF) *</label>
+                    <input type="file" required accept=".pdf" class="cF w-full text-xs text-slate-500 file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300">
+                </div>`;
+            document.getElementById('autoresBox').appendChild(container);
         }
 
-        function addC() {
-            cId++; const d = document.createElement('div'); d.className = 'coautor-item p-4 bg-slate-50 rounded-xl border mt-4';
-            d.innerHTML = `<div class="flex justify-between"><span class="bg-slate-700 text-white text-[10px] px-2 py-1 rounded font-bold mb-2 inline-block">COAUTOR ${cId-1}</span><button type="button" onclick="this.parentElement.parentElement.remove()" class="text-red-600 text-xs font-bold">Eliminar</button></div>
-            <div class="grid grid-cols-2 gap-3 mb-3"><div><input type="text" placeholder="Nombres" required class="cNom w-full px-2 py-1 border rounded text-xs"></div><div><input type="text" placeholder="Cédula" required class="cCed w-full px-2 py-1 border rounded text-xs"></div><div><input type="text" placeholder="Teléfono" required class="cTel w-full px-2 py-1 border rounded text-xs"></div><div><input type="text" placeholder="Dirección" required class="cDir w-full px-2 py-1 border rounded text-xs"></div></div>
-            <label class="text-[11px] font-bold block mb-1">Cédula (PDF) *</label><input type="file" required accept=".pdf" class="cF w-full text-xs">`;
-            document.getElementById('autoresBox').appendChild(d);
-        }
+        async function subirArchivoStorage(file, folder) {
+            const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+            const filePath = `${folder}/${Date.now()}_${cleanName}`;
+            
+            const { error: uploadError } = await window.supabaseClient.storage
+                .from('documentos-cati')
+                .upload(filePath, file);
 
-        async function subirF(file, folder) {
-            const name = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9._-]/g, '_')}`;
-            const { error } = await supabaseClient.storage.from('documentos-cati').upload(`${folder}/${name}`, file);
-            if (error) throw error;
-            return supabaseClient.storage.from('documentos-cati').getPublicUrl(`${folder}/${name}`).data.publicUrl;
+            if (uploadError) throw uploadError;
+
+            const { data } = window.supabaseClient.storage
+                .from('documentos-cati')
+                .getPublicUrl(filePath);
+
+            return data.publicUrl;
         }
 
         document.getElementById('formExpediente').addEventListener('submit', async (e) => {
-            e.preventDefault(); const btn = document.getElementById('btnS'); btn.disabled = true; btn.innerText = 'Subiendo...';
+            e.preventDefault(); 
+            const btn = document.getElementById('btnSubmitExp'); 
+            btn.disabled = true; 
+            btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Subiendo archivos...';
+            
             try {
-                const uCed = await subirF(document.getElementById('fCed').files[0], 'cedulas');
-                const uObr = await subirF(document.getElementById('fObra').files[0], 'obras');
-                const uCon = await subirF(document.getElementById('fCont').files[0], 'contratos');
+                // 1. Carga de archivos principales al bucket privado/storage
+                const urlCedulaPrincipal = await subirArchivoStorage(document.getElementById('fCed').files[0], 'cedulas');
+                const urlObra = await subirArchivoStorage(document.getElementById('fObra').files[0], 'obras');
+                const urlContrato = await subirArchivoStorage(document.getElementById('fCont').files[0], 'contratos');
                 
-                const cod = `CATI-USGP-${Math.floor(100+Math.random()*900)}`;
-                const { data: exp, error: eErr } = await supabaseClient.from('expedientes').insert([{
-                    codigo_expediente: cod, titulo_obra: document.getElementById('tituloObra').value, area_pi: document.getElementById('areaSenadi').value,
-                    tipo_especifico: document.getElementById('tipoObra').value, autor_nombre: document.getElementById('aNom').value,
-                    autor_cedula: document.getElementById('aCed').value, autor_telefono: document.getElementById('aTel').value,
-                    autor_direccion: document.getElementById('aDir').value, archivo_cedula_url: uCed, archivo_obra_url: uObr,
-                    contrato_url: uCon, usuario_id: curU.id
-                }]).select().single();
-                if(eErr) throw eErr;
+                // 2. Generación de código único de trámite
+                const codigoTramite = `CATI-USGP-${Math.floor(1000 + Math.random() * 9000)}`;
+                
+                // 3. Inserción del expediente principal
+                const { data: expedienteCreado, error: expError } = await window.supabaseClient
+                    .from('expedientes')
+                    .insert([{
+                        codigo_expediente: codigoTramite, 
+                        titulo_obra: document.getElementById('tituloObra').value.trim(), 
+                        area_pi: document.getElementById('areaSenadi').value,
+                        tipo_especifico: document.getElementById('tipoObra').value, 
+                        autor_nombre: document.getElementById('aNom').value.trim(),
+                        autor_cedula: document.getElementById('aCed').value.trim(), 
+                        autor_telefono: document.getElementById('aTel').value.trim(),
+                        autor_direccion: document.getElementById('aDir').value.trim(), 
+                        archivo_cedula_url: urlCedulaPrincipal, 
+                        archivo_obra_url: urlObra,
+                        contrato_url: urlContrato, 
+                        usuario_id: currentUser.id,
+                        estado_general: 'en_revision'
+                    }])
+                    .select()
+                    .single();
 
-                for (let c of document.querySelectorAll('.coautor-item')) {
-                    const cf = await subirF(c.querySelector('.cF').files[0], 'cedulas');
-                    await supabaseClient.from('autores').insert([{ expediente_id: exp.id, nombre_completo: c.querySelector('.cNom').value, cedula: c.querySelector('.cCed').value, telefono: c.querySelector('.cTel').value, direccion: c.querySelector('.cDir').value, archivo_cedula_url: cf }]);
+                if(expError) throw expError;
+
+                // 4. Inserción de coautores (si existen)
+                const coautoresItems = document.querySelectorAll('.coautor-item');
+                for (let item of coautoresItems) {
+                    const fileInputCoautor = item.querySelector('.cF').files[0];
+                    const urlCedulaCoautor = await subirArchivoStorage(fileInputCoautor, 'cedulas');
+                    
+                    const { error: coautorError } = await window.supabaseClient
+                        .from('autores')
+                        .insert([{ 
+                            expediente_id: expedienteCreado.id, 
+                            nombre_completo: item.querySelector('.cNom').value.trim(), 
+                            cedula: item.querySelector('.cCed').value.trim(), 
+                            telefono: item.querySelector('.cTel').value.trim(), 
+                            direccion: item.querySelector('.cDir').value.trim(), 
+                            archivo_cedula_url: urlCedulaCoautor 
+                        }]);
+                        
+                    if (coautorError) throw coautorError;
                 }
-                alert('Éxito! Código: ' + cod); window.location.href = 'mis_tramites.html';
+
+                alert(`¡Trámite registrado con éxito!\nCódigo asignado: ${codigoTramite}`); 
+                window.location.href = 'mis_tramites.html';
+
             } catch (err) {
-                document.getElementById('errorTexto').innerText = err.message; document.getElementById('errorContainer').classList.remove('hidden'); btn.disabled = false; btn.innerText = 'Guardar Expediente';
+                document.getElementById('errorTexto').innerText = "Error al registrar el expediente: " + err.message; 
+                document.getElementById('errorContainer').classList.remove('hidden'); 
+                btn.disabled = false; 
+                btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar y Enviar Expediente';
             }
         });
-        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
