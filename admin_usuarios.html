@@ -2,248 +2,56 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Usuarios - Sistema CATI USGP</title>
+    <title>Usuarios - CATI USGP</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
-
-    <!-- HEADER INSTITUCIONAL -->
-    <header class="bg-red-800 text-white shadow-lg border-b border-red-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
-                    <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold tracking-wide uppercase">Gestión de Usuarios y Roles</h1>
-                    <p class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</p>
-                </div>
-            </div>
-            <button onclick="cerrarSesion()" class="bg-red-900 hover:bg-red-950 text-white px-3 py-2 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 shadow">
-                <i class="fa-solid fa-right-from-bracket"></i> Salir
-            </button>
+<body class="bg-gray-100 min-h-screen">
+    <nav class="bg-red-800 text-white p-4 flex justify-between items-center"><h1 class="font-bold">Usuarios CATI</h1><a href="admin_dashboard.html" class="underline text-sm">Dashboard Expedientes</a></nav>
+    <main class="max-w-5xl mx-auto p-6">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl font-bold">Gestión de Personal</h2>
+            <button onclick="document.getElementById('modal').classList.remove('hidden')" class="bg-red-700 text-white px-4 py-2 rounded font-bold">Crear Usuario</button>
         </div>
-    </header>
-
-    <!-- NAVEGACIÓN SECUNDARIA -->
-    <nav class="bg-white shadow-sm border-b border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex gap-2 py-2.5">
-            <a href="admin_dashboard.html" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition flex items-center gap-2">
-                <i class="fa-solid fa-folder-open"></i> Gestión de Expedientes
-            </a>
-            <a href="admin_usuarios.html" class="px-4 py-2 bg-red-700 text-white text-xs font-semibold rounded-lg shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-users-gear"></i> Gestión de Usuarios
-            </a>
-        </div>
-    </nav>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-xl font-bold text-slate-800">Control de Accesos y Personal CATI</h2>
-                <p class="text-xs text-slate-500">Asigne roles de Administrador, Asistente o Solicitante de forma segura[cite: 2, 9].</p>
-            </div>
-            <button onclick="abrirModalNuevoUsuario()" class="bg-red-700 hover:bg-red-800 text-white px-4 py-2.5 rounded-xl text-xs font-semibold shadow transition flex items-center gap-2">
-                <i class="fa-solid fa-user-plus"></i> Nuevo Usuario
-            </button>
-        </div>
-
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden mb-8">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse text-xs">
-                    <thead>
-                        <tr class="bg-slate-50 text-slate-700 uppercase font-bold border-b border-slate-200">
-                            <th class="p-3.5">Nombre Completo</th>
-                            <th class="p-3.5">Correo Institucional</th>
-                            <th class="p-3.5">Rol Actual</th>
-                            <th class="p-3.5">Fecha de Registro</th>
-                            <th class="p-3.5 text-right">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaUsuariosBody" class="divide-y divide-slate-100 text-slate-600">
-                        <tr>
-                            <td colspan="5" class="p-6 text-center text-slate-400">
-                                <i class="fa-solid fa-circle-notch fa-spin text-lg mr-2"></i> Cargando usuarios...
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- SECCIÓN INFERIOR: DESARROLLADO POR GROW -->
-        <div class="mt-8 flex flex-col items-center justify-center text-center space-y-1">
-            <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Desarrollado por</span>
-            <div class="bg-white px-4 py-1.5 rounded-xl shadow-sm border border-slate-200">
-                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-7 w-auto object-contain">
-            </div>
+        <div class="bg-white rounded shadow overflow-hidden">
+            <table class="w-full text-left text-sm"><thead class="bg-gray-50 border-b"><tr><th class="p-3">Nombre</th><th class="p-3">Correo</th><th class="p-3">Rol</th><th class="p-3">Acciones</th></tr></thead><tbody id="lista"></tbody></table>
         </div>
     </main>
-
-    <!-- MODAL NUEVO USUARIO -->
-    <div id="modalUsuario" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
-                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Registrar Nuevo Usuario</h3>
-                <button onclick="cerrarModalNuevoUsuario()" class="text-white hover:text-red-200 text-lg font-bold">&times;</button>
-            </div>
-            <form id="formNuevoUsuario" onsubmit="crearUsuario(event)" class="p-6 space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Nombre Completo</label>
-                    <input type="text" id="nuevoNombre" required class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Correo Institucional</label>
-                    <input type="email" id="nuevoEmail" required placeholder="usuario@sangregorio.edu.ec" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Contraseña Temporal</label>
-                    <input type="password" id="nuevoPassword" required minlength="6" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 uppercase mb-1">Rol en el Sistema</label>
-                    <select id="nuevoRol" class="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:ring-2 focus:ring-red-700">
-                        <option value="solicitante">Solicitante</option>
-                        <option value="asistente">Asistente CATI</option>
-                        <option value="administrador">Administrador</option>
-                        <option value="superusuario">Superusuario</option>
-                    </select>
-                </div>
-                <div class="flex justify-end gap-2 pt-2 border-t">
-                    <button type="button" onclick="cerrarModalNuevoUsuario()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Cancelar</button>
-                    <button type="submit" id="btnGuardarUser" class="px-4 py-2 bg-red-700 hover:bg-red-800 text-white rounded-lg text-xs font-semibold shadow">Crear Usuario</button>
-                </div>
-            </form>
-        </div>
+    <div id="modal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center">
+        <form id="formUser" class="bg-white p-6 rounded-lg w-96 space-y-4">
+            <h3 class="font-bold border-b pb-2">Nuevo Usuario Staff</h3>
+            <input type="text" id="nuNom" required placeholder="Nombre" class="w-full border p-2 rounded">
+            <input type="email" id="nuEmail" required placeholder="Correo" class="w-full border p-2 rounded">
+            <input type="password" id="nuPass" required placeholder="Contraseña" class="w-full border p-2 rounded">
+            <select id="nuRol" class="w-full border p-2 rounded"><option value="asistente">Asistente</option><option value="administrador">Administrador</option></select>
+            <div class="flex justify-end gap-2"><button type="button" onclick="document.getElementById('modal').classList.add('hidden')" class="px-3 py-1 bg-gray-300 rounded">Cancelar</button><button type="submit" class="px-3 py-1 bg-red-700 text-white rounded">Guardar</button></div>
+        </form>
     </div>
-
-    <!-- SCRIPT DE LÓGICA DE USUARIOS -->
     <script>
-        let usuarioActual = null;
-        // Cliente secundario con persistencia desactivada para evitar cerrar la sesión actual al crear usuarios
-        const SUPABASE_URL_VAL = "https://ldnqspgbnvqvprvdxaub.supabase.co";
-        const SUPABASE_ANON_KEY_VAL = "sb_publishable_h4gikz8ypO56Zc3r5umgvw_e8evug4g";
-        const authClon = supabase.createClient(SUPABASE_URL_VAL, SUPABASE_ANON_KEY_VAL, {
-            auth: { persistSession: false, autoRefreshToken: false }
-        });
-
+        let currentUser;
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await window.supabaseClient.auth.getSession();
-            if (!session) { window.location.href = 'index.html'; return; }
-
-            const { data: profile } = await window.supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
-            usuarioActual = profile;
-
-            if (!profile || (profile.rol !== 'superusuario' && profile.rol !== 'administrador')) {
-                alert('Acceso no autorizado.');
-                window.location.href = 'mis_tramites.html';
-                return;
-            }
-
-            await cargarUsuarios();
+            if(!session) return window.location.href='index.html';
+            const { data } = await window.supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
+            if(data.rol !== 'superusuario' && data.rol !== 'administrador') return window.location.href='mis_tramites.html';
+            currentUser = data; cargar();
         });
-
-        async function cargarUsuarios() {
-            const { data, error } = await window.supabaseClient.from('profiles').select('*').order('created_at', { ascending: false });
-            if (error) { alert('Error al cargar usuarios: ' + error.message); return; }
-
-            const tbody = document.getElementById('tablaUsuariosBody');
-            tbody.innerHTML = data.map(u => `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="p-3.5 font-bold text-slate-800">${u.nombre_completo}</td>
-                    <td class="p-3.5">${u.email}</td>
-                    <td class="p-3.5">
-                        <select onchange="cambiarRol('${u.id}', this.value)" class="px-2 py-1 text-[11px] font-bold rounded border border-slate-300 bg-white">
-                            <option value="solicitante" ${u.rol === 'solicitante' ? 'selected' : ''}>Solicitante</option>
-                            <option value="asistente" ${u.rol === 'asistente' ? 'selected' : ''}>Asistente CATI</option>
-                            <option value="administrador" ${u.rol === 'administrador' ? 'selected' : ''}>Administrador</option>
-                            <option value="superusuario" ${u.rol === 'superusuario' ? 'selected' : ''}>Superusuario</option>
-                        </select>
-                    </td>
-                    <td class="p-3.5">${new Date(u.created_at).toLocaleDateString()}</td>
-                    <td class="p-3.5 text-right">
-                        ${u.id !== usuarioActual.id ? `
-                            <button onclick="eliminarUsuario('${u.id}', '${u.email}')" class="text-red-600 hover:text-red-800 font-semibold" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
-                        ` : '<span class="text-xs text-slate-400 italic">Actual</span>'}
-                    </td>
-                </tr>
-            `).join('');
+        async function cargar() {
+            const { data } = await window.supabaseClient.from('profiles').select('*').order('created_at', {ascending: false});
+            document.getElementById('lista').innerHTML = data.map(u => `<tr class="border-b"><td class="p-3">${u.nombre_completo}</td><td class="p-3">${u.email}</td><td class="p-3 uppercase text-xs font-bold">${u.rol}</td><td class="p-3"><button onclick="eliminar('${u.id}')" class="text-red-600 font-bold">Eliminar</button></td></tr>`).join('');
         }
-
-        function abrirModalNuevoUsuario() { document.getElementById('modalUsuario').classList.remove('hidden'); }
-        function cerrarModalNuevoUsuario() { document.getElementById('modalUsuario').classList.add('hidden'); document.getElementById('formNuevoUsuario').reset(); }
-
-        async function crearUsuario(e) {
+        document.getElementById('formUser').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const btn = document.getElementById('btnGuardarUser');
-            btn.innerText = "Registrando..."; btn.disabled = true;
-
-            try {
-                const email = document.getElementById('nuevoEmail').value.trim();
-                const password = document.getElementById('nuevoPassword').value;
-                const nombre_completo = document.getElementById('nuevoNombre').value.trim();
-                const rol = document.getElementById('nuevoRol').value;
-
-                const { data, error } = await authClon.auth.signUp({
-                    email,
-                    password,
-                    options: { data: { nombre_completo, rol } }
-                });
-
-                if (error) throw error;
-
-                if (data.user) {
-                    await window.supabaseClient.from('profiles').update({ rol, nombre_completo }).eq('id', data.user.id);
-                }
-
-                alert('Usuario creado con éxito.');
-                cerrarModalNuevoUsuario();
-                await cargarUsuarios();
-            } catch (err) {
-                alert('Error al crear usuario: ' + err.message);
-            } finally {
-                btn.innerText = "Crear Usuario"; btn.disabled = false;
-            }
-        }
-
-        async function cambiarRol(userId, nuevoRol) {
-            const { error } = await window.supabaseClient.from('profiles').update({ rol: nuevoRol }).eq('id', userId);
-            if (error) {
-                alert('Error al actualizar rol: ' + error.message);
-                await cargarUsuarios();
-            } else {
-                alert('Rol actualizado correctamente.');
-            }
-        }
-
-        async function eliminarUsuario(userId, email) {
-            if (!confirm(`¿Está seguro de eliminar al usuario ${email}?`)) return;
-
-            const passwordConfirm = prompt("Ingrese su contraseña para confirmar la eliminación:");
-            if (!passwordConfirm) return;
-
-            const { error: authError } = await window.supabaseClient.auth.signInWithPassword({
-                email: usuarioActual.email,
-                password: passwordConfirm
-            });
-
-            if (authError) { alert("Contraseña incorrecta."); return; }
-
-            const { error } = await window.supabaseClient.from('profiles').delete().eq('id', userId);
-            if (error) { alert('Error al eliminar perfil: ' + error.message); return; }
-
-            alert('Usuario eliminado.');
-            await cargarUsuarios();
-        }
-
-        async function cerrarSesion() {
-            await window.supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+            const { data, error } = await window.supabaseClient.rpc('registrar_usuario_maestro', { p_email: document.getElementById('nuEmail').value, p_password: document.getElementById('nuPass').value, p_nombre: document.getElementById('nuNom').value, p_rol: document.getElementById('nuRol').value });
+            if(error || !data.success) alert(data?.error || "Error"); else { document.getElementById('modal').classList.add('hidden'); cargar(); }
+        });
+        async function eliminar(id) {
+            if(!confirm("Requiere reingreso de contraseña para eliminar. ¿Continuar?")) return;
+            const pass = prompt("Ingrese su contraseña actual:");
+            const { error } = await window.supabaseClient.auth.signInWithPassword({ email: currentUser.email, password: pass });
+            if(error) return alert("Contraseña incorrecta.");
+            await window.supabaseClient.from('profiles').delete().eq('id', id); cargar();
         }
     </script>
 </body>

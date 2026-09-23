@@ -2,399 +2,90 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalle y Gestión de Trámite - Sistema CATI USGP</title>
+    <title>Detalle Expediente</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabaseClient.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col font-sans">
-
-    <!-- HEADER INSTITUCIONAL -->
-    <nav class="bg-red-800 text-white shadow-lg border-b border-red-900">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-white px-3.5 py-1.5 rounded-xl shadow-md border border-slate-200">
-                    <img src="logo-CATI-2026-new.jpg" alt="CATI" class="h-9 w-auto object-contain">
-                </div>
-                <div>
-                    <h1 class="text-sm font-bold tracking-wide uppercase">Gestión de Expediente CATI</h1>
-                    <p class="text-[11px] text-red-200">Universidad San Gregorio de Portoviejo</p>
-                </div>
-            </div>
-            <a id="btnVolver" href="admin_dashboard.html" class="text-xs font-bold text-white hover:text-red-200 bg-red-900 px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
-                <i class="fa-solid fa-arrow-left"></i> Volver al Panel
-            </a>
+<body class="bg-gray-100 min-h-screen p-6">
+    <main class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-xl space-y-6">
+        <div>
+            <h2 id="tit" class="text-2xl font-bold">Cargando...</h2>
+            <span id="est" class="inline-block mt-2 px-3 py-1 text-xs font-bold uppercase rounded border"></span>
         </div>
-    </nav>
-
-    <!-- CONTENIDO PRINCIPAL -->
-    <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex-grow w-full">
-        
-        <!-- CABECERA DEL EXPEDIENTE -->
-        <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <div class="flex items-center gap-2 mb-1">
-                    <span id="expCodigo" class="text-lg font-bold text-red-700">CATI-USGP-----</span>
-                    <span id="expBadgeEstado" class="px-3 py-0.5 rounded-full text-[10px] font-bold uppercase border bg-amber-50 text-amber-800 border-amber-200">Cargando...</span>
-                </div>
-                <h2 id="expTitulo" class="text-xl font-bold text-slate-800">Cargando título de la obra...</h2>
-                <p id="expAreaInfo" class="text-xs text-slate-500 mt-1">Área SENADI: --</p>
+        <div id="obsBox" class="bg-red-50 p-4 border border-red-200 text-red-800 rounded">Sin observaciones registradas.</div>
+        <div class="grid grid-cols-2 gap-4 text-sm border-t pt-4">
+            <div class="p-3 border rounded bg-gray-50 flex flex-col gap-2">
+                <span class="font-bold">Cédula del Autor</span>
+                <a id="lCed" target="_blank" class="text-blue-600 underline">Descargar Documento</a>
+                <div id="repCed" class="hidden mt-2"><input type="file" id="nCed" class="text-xs w-full"><button onclick="reemplazar('archivo_cedula_url', 'nCed')" class="bg-red-700 text-white px-2 py-1 rounded text-xs mt-1 w-full font-bold">Reemplazar y Enviar a Revisión</button></div>
             </div>
-            <div id="panelAccionesRapidas" class="flex flex-wrap gap-2">
-                <!-- Acciones dinámicas según rol y estado -->
+            <div class="p-3 border rounded bg-gray-50 flex flex-col gap-2">
+                <span class="font-bold">Archivo de Obra</span>
+                <a id="lObra" target="_blank" class="text-blue-600 underline">Descargar Archivo</a>
+                <div id="repObra" class="hidden mt-2"><input type="file" id="nObra" class="text-xs w-full"><button onclick="reemplazar('archivo_obra_url', 'nObra')" class="bg-red-700 text-white px-2 py-1 rounded text-xs mt-1 w-full font-bold">Reemplazar y Enviar a Revisión</button></div>
             </div>
         </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- COLUMNA IZQUIERDA: DATOS Y AUTORES -->
-            <div class="lg:col-span-2 space-y-6">
-                
-                <!-- INFORMACIÓN GENERAL -->
-                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
-                    <h3 class="font-bold text-sm text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid id-card text-red-700"></i> Información del Autor Principal
-                    </h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                        <div><span class="font-bold text-slate-500 block">Nombres:</span><span id="infoAutorNombre" class="text-slate-800 font-semibold">-</span></div>
-                        <div><span class="font-bold text-slate-500 block">Cédula:</span><span id="infoAutorCedula" class="text-slate-800 font-semibold">-</span></div>
-                        <div><span class="font-bold text-slate-500 block">Teléfono:</span><span id="infoAutorTelefono" class="text-slate-800 font-semibold">-</span></div>
-                        <div><span class="font-bold text-slate-500 block">Dirección:</span><span id="infoAutorDireccion" class="text-slate-800 font-semibold">-</span></div>
-                    </div>
-                </div>
-
-                <!-- OBSERVACIONES REGISTRADAS -->
-                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
-                    <h3 class="font-bold text-sm text-slate-800 mb-3 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-comment-dots text-red-700"></i> Historial de Observaciones / Correcciones
-                    </h3>
-                    <div id="boxObservaciones" class="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 min-h-[80px]">
-                        Sin observaciones registradas.
-                    </div>
-                    
-                    <!-- Formulario de observaciones (Solo Staff) -->
-                    <div id="formObservacionContainer" class="hidden mt-4 pt-4 border-t border-slate-200">
-                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Registrar Nueva Observación (Requiere Corrección)</label>
-                        <textarea id="inputNuevaObservacion" rows="3" placeholder="Indique claramente los errores o correcciones que debe realizar el solicitante..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-lg focus:ring-2 focus:ring-red-700 mb-2"></textarea>
-                        <button onclick="guardarObservacion()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-xs font-bold shadow transition">
-                            <i class="fa-solid fa-triangle-exclamation mr-1"></i> Enviar a Requiere Corrección
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- COLUMNA DERECHA: DOCUMENTOS Y DESCARGAS -->
-            <div class="space-y-6">
-                
-                <div class="bg-white rounded-2xl shadow-xl border border-slate-200 p-6">
-                    <h3 class="font-bold text-sm text-slate-800 mb-4 border-b pb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-folder-open text-red-700"></i> Documentos del Expediente
-                    </h3>
-                    
-                    <div class="space-y-3 text-xs">
-                        <div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center">
-                            <div>
-                                <span class="font-bold block text-slate-800">Cédula Autor Principal</span>
-                                <a id="linkCedula" href="#" target="_blank" class="text-blue-600 hover:underline font-medium"><i class="fa-solid fa-file-pdf mr-1"></i> Ver Archivo</a>
-                            </div>
-                            <div id="replaceCedulaContainer" class="hidden">
-                                <input type="file" id="fileNewCedula" accept=".pdf" class="hidden" onchange="reemplazarArchivo('cedulas', this)">
-                                <button onclick="document.getElementById('fileNewCedula').click()" class="bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Reemplazar</button>
-                            </div>
-                        </div>
-
-                        <div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center">
-                            <div>
-                                <span class="font-bold block text-slate-800">Archivo de la Obra</span>
-                                <a id="linkObra" href="#" target="_blank" class="text-blue-600 hover:underline font-medium"><i class="fa-solid fa-file-arrow-down mr-1"></i> Ver / Descargar</a>
-                            </div>
-                            <div id="replaceObraContainer" class="hidden">
-                                <input type="file" id="fileNewObra" accept=".pdf,.zip,.rar" class="hidden" onchange="reemplazarArchivo('obras', this)">
-                                <button onclick="document.getElementById('fileNewObra').click()" class="bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Reemplazar</button>
-                            </div>
-                        </div>
-
-                        <div class="p-3 bg-slate-50 rounded-xl border flex justify-between items-center">
-                            <div>
-                                <span class="font-bold block text-slate-800">Contrato de Cesión</span>
-                                <a id="linkContrato" href="#" target="_blank" class="text-blue-600 hover:underline font-medium"><i class="fa-solid fa-file-pdf mr-1"></i> Ver Archivo</a>
-                            </div>
-                            <div id="replaceContratoContainer" class="hidden">
-                                <input type="file" id="fileNewContrato" accept=".pdf" class="hidden" onchange="reemplazarArchivo('contratos', this)">
-                                <button onclick="document.getElementById('fileNewContrato').click()" class="bg-red-700 text-white px-2.5 py-1 rounded text-[10px] font-bold">Reemplazar</button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- DOCUMENTO OFICIAL SENADI (CIERRE) -->
-                    <div class="mt-6 pt-4 border-t border-slate-200">
-                        <h4 class="font-bold text-xs text-slate-800 uppercase mb-2">Documento Oficial SENADI</h4>
-                        <div id="senadiContainer">
-                            <!-- Si ya existe se muestra el enlace, si es staff y está en revisión se permite subir -->
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
+        <div id="divSenadi" class="hidden p-4 bg-green-50 border border-green-200 rounded text-center">
+            <h3 class="font-bold text-green-800 mb-2">Trámite Finalizado</h3>
+            <a id="lSenadi" target="_blank" class="bg-green-700 text-white px-4 py-2 rounded font-bold">Descargar Resolución SENADI[cite: 8]</a>
         </div>
-
-        <!-- SECCIÓN INFERIOR: DESARROLLADO POR GROW -->
-        <div class="mt-12 flex flex-col items-center justify-center text-center space-y-1">
-            <span class="text-[11px] font-medium text-slate-500 uppercase tracking-wider">Desarrollado por</span>
-            <div class="bg-white px-4 py-1.5 rounded-xl shadow-sm border border-slate-200">
-                <img src="logo-grow-26.jpg" alt="Grow Innovation Lab" class="h-7 w-auto object-contain">
+        <div id="panelStaff" class="hidden border-t pt-4 space-y-4">
+            <div class="bg-gray-50 p-4 rounded border">
+                <h3 class="font-bold mb-2">Observaciones (Genera "Requiere Corrección")</h3>
+                <textarea id="txtObs" class="w-full border p-2 rounded text-sm mb-2" rows="3"></textarea>
+                <button onclick="enviarObservacion()" class="bg-amber-600 text-white px-4 py-2 rounded font-bold text-sm w-full">Registrar Observación y Cambiar Estado</button>
+            </div>
+            <div class="bg-gray-50 p-4 rounded border">
+                <h3 class="font-bold mb-2">Cierre del Trámite[cite: 8]</h3>
+                <input type="file" id="fSenadi" accept=".pdf" class="w-full border p-2 rounded text-sm bg-white mb-2">
+                <button onclick="cerrarTramite()" class="bg-green-700 text-white px-4 py-2 rounded font-bold text-sm w-full">Cargar Resolución SENADI y Cerrar Expediente</button>
             </div>
         </div>
+        <button onclick="window.history.back()" class="w-full border py-2 rounded font-bold text-gray-600 hover:bg-gray-100">Volver</button>
     </main>
-
-    <!-- MODAL CARGA DOCUMENTO SENADI (SOLO STAFF) -->
-    <div id="modalSenadi" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md overflow-hidden">
-            <div class="bg-red-800 text-white p-4 flex justify-between items-center">
-                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-stamp"></i> Cierre de Trámite y SENADI</h3>
-                <button onclick="cerrarModalSenadi()" class="text-white hover:text-red-200 text-lg font-bold">&times;</button>
-            </div>
-            <div class="p-6 space-y-4">
-                <p class="text-xs text-slate-600">Para cerrar el trámite oficialmente, cargue el documento emitido por el SENADI (PDF). El estado cambiará automáticamente a <strong>Cerrado</strong>[cite: 9].</p>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Documento SENADI (PDF) *</label>
-                    <input type="file" id="fileSenadi" accept=".pdf" class="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100">
-                </div>
-            </div>
-            <div class="bg-slate-50 p-4 border-t flex justify-end gap-2">
-                <button onclick="cerrarModalSenadi()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold">Cancelar</button>
-                <button onclick="subirDocumentoSenadi()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold shadow">Cerrar Trámite y Guardar</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- SCRIPT DE GESTIÓN -->
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const expedienteId = urlParams.get('id');
-        let expedienteActual = null;
-        let usuarioActual = null;
-
+        const id = new URLSearchParams(window.location.search).get('id');
+        let isStaff = false;
         document.addEventListener('DOMContentLoaded', async () => {
-            if (!expedienteId) {
-                alert('ID de expediente no válido.');
-                window.location.href = 'mis_tramites.html';
-                return;
-            }
-
-            try {
-                const { data: { session }, error: sessionError } = await window.supabaseClient.auth.getSession();
-                if (sessionError || !session) { window.location.href = 'index.html'; return; }
-
-                const { data: profile } = await window.supabaseClient.from('profiles').select('*').eq('id', session.user.id).single();
-                usuarioActual = profile;
-
-                // Ajustar enlace de retorno según rol
-                if (profile.rol === 'solicitante') {
-                    document.getElementById('btnVolver').href = 'mis_tramites.html';
-                } else {
-                    document.getElementById('btnVolver').href = 'admin_dashboard.html';
-                }
-
-                await cargarDetalleExpediente();
-
-            } catch (err) {
-                alert('Error al inicializar: ' + err.message);
+            const { data: { session } } = await window.supabaseClient.auth.getSession();
+            const { data: p } = await window.supabaseClient.from('profiles').select('rol').eq('id', session.user.id).single();
+            isStaff = p.rol !== 'solicitante';
+            const { data: exp } = await window.supabaseClient.from('expedientes').select('*').eq('id', id).single();
+            document.getElementById('tit').innerText = `${exp.codigo_expediente} - ${exp.titulo_obra}`;
+            document.getElementById('est').innerText = exp.estado_general.replace('_', ' ');
+            document.getElementById('obsBox').innerText = exp.observaciones || "Sin observaciones.";
+            document.getElementById('lCed').href = exp.archivo_cedula_url; document.getElementById('lObra').href = exp.archivo_obra_url;
+            
+            if (exp.estado_general === 'cerrado' && exp.documento_senadi_url) {
+                document.getElementById('divSenadi').classList.remove('hidden');
+                document.getElementById('lSenadi').href = exp.documento_senadi_url;
+            } else if (isStaff) {
+                document.getElementById('panelStaff').classList.remove('hidden');
+            } else if (exp.estado_general === 'requiere_correccion') {
+                document.getElementById('repCed').classList.remove('hidden');
+                document.getElementById('repObra').classList.remove('hidden');
             }
         });
-
-        async function cargarDetalleExpediente() {
-            const { data, error } = await window.supabaseClient
-                .from('expedientes')
-                .select('*')
-                .eq('id', expedienteId)
-                .single();
-
-            if (error || !data) {
-                alert('No se pudo cargar el expediente.');
-                return;
-            }
-
-            expedienteActual = data;
-            renderizarVista();
+        async function enviarObservacion() {
+            await window.supabaseClient.from('expedientes').update({ observaciones: document.getElementById('txtObs').value, estado_general: 'requiere_correccion' }).eq('id', id);
+            location.reload();
         }
-
-        function renderizarVista() {
-            document.getElementById('expCodigo').innerText = expedienteActual.codigo_expediente;
-            document.getElementById('expTitulo').innerText = expedienteActual.titulo_obra;
-            document.getElementById('expAreaInfo').innerText = `Área SENADI: ${expedienteActual.area_pi} (${expedienteActual.tipo_especifico})`;
-            
-            const badge = document.getElementById('expBadgeEstado');
-            badge.innerText = expedienteActual.estado_general.replace('_', ' ').toUpperCase();
-            badge.className = `px-3 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                expedienteActual.estado_general === 'en_revision' ? 'bg-amber-50 text-amber-800 border-amber-200' :
-                expedienteActual.estado_general === 'requiere_correccion' ? 'bg-red-50 text-red-800 border-red-200' :
-                expedienteActual.estado_general === 'cerrado' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-slate-100 text-slate-700 border-slate-200'
-            }`;
-
-            document.getElementById('infoAutorNombre').innerText = expedienteActual.autor_nombre;
-            document.getElementById('infoAutorCedula').innerText = expedienteActual.autor_cedula;
-            document.getElementById('infoAutorTelefono').innerText = expedienteActual.autor_telefono;
-            document.getElementById('infoAutorDireccion').innerText = expedienteActual.autor_direccion;
-
-            document.getElementById('linkCedula').href = expedienteActual.archivo_cedula_url;
-            document.getElementById('linkObra').href = expedienteActual.archivo_obra_url;
-            document.getElementById('linkContrato').href = expedienteActual.contrato_url;
-
-            document.getElementById('boxObservaciones').innerText = expedienteActual.observaciones || "Sin observaciones registradas.";
-
-            const esStaff = usuarioActual.rol !== 'solicitante';
-            const esRequiereCorreccion = expedienteActual.estado_general === 'requiere_correccion';
-            const esDueno = expedienteActual.usuario_id === usuarioActual.id;
-
-            // Mostrar opción de reemplazar documentos solo si es el dueño y está en requiere_correccion[cite: 9]
-            if (esDueno && esRequiereCorreccion) {
-                document.getElementById('replaceCedulaContainer').classList.remove('hidden');
-                document.getElementById('replaceObraContainer').classList.remove('hidden');
-                document.getElementById('replaceContratoContainer').classList.remove('hidden');
-            }
-
-            // Mostrar formulario de observaciones si es Staff
-            if (esStaff) {
-                document.getElementById('formObservacionContainer').classList.remove('hidden');
-            }
-
-            // Renderizar sección SENADI / Cierre
-            const senadiBox = document.getElementById('senadiContainer');
-            if (expedienteActual.documento_senadi_url) {
-                senadiBox.innerHTML = `
-                    <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex justify-between items-center">
-                        <div>
-                            <span class="font-bold text-emerald-800 block text-xs">Documento Oficial Aprobado</span>
-                            <a href="${expedienteActual.documento_senadi_url}" target="_blank" class="text-emerald-700 hover:underline font-semibold text-xs"><i class="fa-solid fa-file-arrow-down mr-1"></i> Descargar Resolución SENADI[cite: 9]</a>
-                        </div>
-                    </div>
-                `;
-            } else {
-                if (esStaff) {
-                    senadiBox.innerHTML = `
-                        <button onclick="abrirModalSenadi()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2 rounded-lg text-xs font-bold shadow transition flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-circle-check"></i> Cargar Documento SENADI y Cerrar Trámite[cite: 9]
-                        </button>
-                    `;
-                } else {
-                    senadiBox.innerHTML = `<p class="text-slate-400 text-xs italic">El documento oficial del SENADI estará disponible una vez finalizado el proceso[cite: 9].</p>`;
-                }
-            }
+        async function cerrarTramite() {
+            const f = document.getElementById('fSenadi').files[0]; if(!f) return alert("Seleccione el archivo SENADI");
+            const path = `senadi/${Date.now()}_${f.name}`;
+            await window.supabaseClient.storage.from('documentos-cati').upload(path, f);
+            const url = window.supabaseClient.storage.from('documentos-cati').getPublicUrl(path).data.publicUrl;
+            await window.supabaseClient.from('expedientes').update({ documento_senadi_url: url, estado_general: 'cerrado' }).eq('id', id);
+            location.reload();
         }
-
-        async function guardarObservacion() {
-            const textoObs = document.getElementById('inputNuevaObservacion').value.trim();
-            if (!textoObs) { alert('Por favor ingrese la observación.'); return; }
-
-            const { error } = await window.supabaseClient
-                .from('expedientes')
-                .update({ 
-                    observaciones: textoObs,
-                    estado_general: 'requiere_correccion'
-                })
-                .eq('id', expedienteId);
-
-            if (error) { alert('Error al guardar observación: ' + error.message); return; }
-
-            alert('Observación registrada con éxito. El trámite pasó a Estado: Requiere Corrección[cite: 9].');
-            await cargarDetalleExpediente();
-            document.getElementById('inputNuevaObservacion').value = '';
-        }
-
-        async function reemplazarArchivo(folder, inputEl) {
-            const file = inputEl.files[0];
-            if (!file) return;
-
-            if (!confirm(`¿Está seguro de reemplazar este documento con ${file.name}?`)) return;
-
-            try {
-                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                const filePath = `${folder}/${Date.now()}_${cleanName}`;
-                
-                const { error: uploadError } = await window.supabaseClient.storage
-                    .from('documentos-cati')
-                    .upload(filePath, file);
-
-                if (uploadError) throw uploadError;
-
-                const { data } = window.supabaseClient.storage
-                    .from('documentos-cati')
-                    .getPublicUrl(filePath);
-
-                const newUrl = data.publicUrl;
-                let updatePayload = {};
-
-                if (folder === 'cedulas') updatePayload.archivo_cedula_url = newUrl;
-                if (folder === 'obras') updatePayload.archivo_obra_url = newUrl;
-                if (folder === 'contratos') updatePayload.contrato_url = newUrl;
-
-                // Al reemplazar el documento, el trámite vuelve automáticamente a "en_revision" según flujo CATI[cite: 9]
-                updatePayload.estado_general = 'en_revision';
-
-                const { error: dbError } = await window.supabaseClient
-                    .from('expedientes')
-                    .update(updatePayload)
-                    .eq('id', expedienteId);
-
-                if (dbError) throw dbError;
-
-                alert('Documento reemplazado con éxito. El trámite ha regresado a estado En Revisión[cite: 9].');
-                await cargarDetalleExpediente();
-
-            } catch (err) {
-                alert('Error al reemplazar archivo: ' + err.message);
-            }
-        }
-
-        function abrirModalSenadi() { document.getElementById('modalSenadi').classList.remove('hidden'); }
-        function cerrarModalSenadi() { document.getElementById('modalSenadi').classList.add('hidden'); }
-
-        async function subirDocumentoSenadi() {
-            const fileInput = document.getElementById('fileSenadi');
-            const file = fileInput.files[0];
-            if (!file) { alert('Seleccione el documento PDF del SENADI.'); return; }
-
-            try {
-                const cleanName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-                const filePath = `senadi_docs/${Date.now()}_${cleanName}`;
-                
-                const { error: uploadError } = await window.supabaseClient.storage
-                    .from('documentos-cati')
-                    .upload(filePath, file);
-
-                if (uploadError) throw uploadError;
-
-                const { data } = window.supabaseClient.storage
-                    .from('documentos-cati')
-                    .getPublicUrl(filePath);
-
-                const { error: dbError } = await window.supabaseClient
-                    .from('expedientes')
-                    .update({ 
-                        documento_senadi_url: data.publicUrl,
-                        estado_general: 'cerrado' // Cambio a estado Cerrado según especificación CATI[cite: 9]
-                    })
-                    .eq('id', expedienteId);
-
-                if (dbError) throw dbError;
-
-                alert('¡Trámite cerrado y documento SENADI cargado con éxito![cite: 9]');
-                cerrarModalSenadi();
-                await cargarDetalleExpediente();
-
-            } catch (err) {
-                alert('Error al cargar documento SENADI: ' + err.message);
-            }
-        }
-
-        async function cerrarSesion() {
-            await window.supabaseClient.auth.signOut();
-            window.location.href = 'index.html';
+        async function reemplazar(campo, inputId) {
+            const f = document.getElementById(inputId).files[0]; if(!f) return alert("Seleccione archivo");
+            const path = `reemplazos/${Date.now()}_${f.name}`;
+            await window.supabaseClient.storage.from('documentos-cati').upload(path, f);
+            const url = window.supabaseClient.storage.from('documentos-cati').getPublicUrl(path).data.publicUrl;
+            await window.supabaseClient.from('expedientes').update({ [campo]: url, estado_general: 'en_revision' }).eq('id', id);
+            location.reload();
         }
     </script>
 </body>
